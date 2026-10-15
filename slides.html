@@ -98,6 +98,8 @@
   .chart { width: 38vw; height: 46vh; }
   .nw { white-space: nowrap; }
   .small-facts li { font-size: clamp(17px, 2vw, 28px); }
+  .ev { display: block; margin-top: .6vh; font-size: clamp(13px, 1.4vw, 19px); color: var(--ink-dim); text-indent: 0; }
+  .ins li { margin: 1.8vh 0; font-size: clamp(16px, 1.8vw, 25px); }
 </style>
 <style>
   .chart { width: 40vw; height: 48vh; }
@@ -216,14 +218,13 @@
   <h2>최종 분석 결과에 대한 우리 팀의 해석</h2>
   <div class="withimg">
     <div class="diagram plot"><div class="chart" id="g9"></div></div>
-    <ul class="facts txt small-facts">
-      <li>거포형 <b>53명</b>: 홈런율 평균의 <b>1.76배</b></li>
-      <li>교타형 <b>45명</b>: 2루타율 <b>1.36배</b></li>
-      <li>준족형 <b>57명</b>: 도루율 <b>1.75배</b>, 가장 약한 이름</li>
-      <li>결론: 세 유형과 비슷한 경향, 경계는 흐릿</li>
+    <ul class="facts txt small-facts ins">
+      <li>홈런 많으면 삼진도 많음, 잘 치는 거포는 삼진 적음<br><span class="ev">상관 <b>0.337</b> · 거포형 안 삼진율-OPS <b>-0.415</b> · 김도영 45홈런 삼진율 0.174</span></li>
+      <li>준족형 대부분은 빠르지 않음<br><span class="ev">도루 중앙값 <b>3개</b> · 상위 5명이 전체 도루의 <b>25.2%</b></span></li>
+      <li>유형은 실력 순서가 아닌 치는 방식<br><span class="ev">유형 사이 OPS 차이 <b>0.116</b> · 거포형 안 차이 <b>0.566</b></span></li>
     </ul>
   </div>
-  <p class="small">그래프는 다섯 비율 가운데 홈런율과 도루율 두 개만 표시</p>
+  <p class="small">결론: 세 유형과 비슷한 경향, 경계는 흐릿 · 그래프는 홈런율과 도루율 두 개만 표시</p>
 </section>
 
 <!-- 10 추가 연구 -->

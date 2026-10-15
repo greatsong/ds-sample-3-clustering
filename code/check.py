@@ -176,3 +176,42 @@ for 모델이름, 번호8 in 후보.items():
     평균8["인원"] = 번호8.value_counts()
     print("   묶음별 평균(-1은 잡음):")
     print("   " + 평균8.round(3).to_string().replace("\n", "\n   "))
+
+print("\n== 9. 인사이트 (우리 팀이 찾아낸 것)")
+d9 = d.copy()
+d9["유형"] = d9["군집"].map(이름)
+d9["OPS"] = pd.to_numeric(d9["OPS"], errors="coerce")
+리그삼진율 = d9["삼진율"].mean()
+
+print("-- 9-1. 홈런과 삼진")
+print(f"홈런율-삼진율 상관계수(155명): {d9['홈런율'].corr(d9['삼진율']):.3f}")
+상위, 하위 = d9["홈런율"].quantile(0.75), d9["홈런율"].quantile(0.25)
+print(f"홈런율 상위 25% 선수의 평균 삼진율: {d9.loc[d9['홈런율'] >= 상위, '삼진율'].mean():.3f}"
+      f" · 하위 25%: {d9.loc[d9['홈런율'] <= 하위, '삼진율'].mean():.3f}")
+print(f"155명 평균 삼진율: {리그삼진율:.3f}")
+홈런순 = d9.sort_values("홈런", ascending=False).head(5)
+for _, r in 홈런순.iterrows():
+    print(f"  홈런 {int(r['홈런'])}개 {r['선수명']}({r['팀']}): 삼진율 {r['삼진율']:.3f} · OPS {r['OPS']:.3f} · {r['유형']}")
+거포 = d9[d9["유형"] == "거포형"]
+print(f"거포형 안에서 삼진율-OPS 상관계수: {거포['삼진율'].corr(거포['OPS']):.3f}")
+
+print("-- 9-2. 준족형의 도루")
+도루순 = d9.sort_values("도루", ascending=False)
+상위5 = 도루순.head(5)
+print(f"155명 도루 합계: {int(d9['도루'].sum())} · 도루 상위 5명 합계: {int(상위5['도루'].sum())}"
+      f" · 비율 {상위5['도루'].sum() / d9['도루'].sum():.3f} ({상위5['도루'].sum() / d9['도루'].sum() * 100:.1f}%)")
+print("  도루 상위 5명:", " · ".join(f"{r['선수명']} {int(r['도루'])}개({r['유형']})" for _, r in 상위5.iterrows()))
+준족 = d9[d9["유형"] == "준족형"]
+print(f"준족형 {len(준족)}명의 도루 개수 중앙값: {준족['도루'].median():.0f}개"
+      f" · 도루 5개 이하: {int((준족['도루'] <= 5).sum())}명 · 도루 20개 이상: {int((준족['도루'] >= 20).sum())}명")
+print(f"155명 가운데 도루 20개 이상: {int((d9['도루'] >= 20).sum())}명")
+
+print("-- 9-3. 유형과 실력(OPS)")
+요약 = d9.groupby("유형")["OPS"].agg(["mean", "min", "max"])
+for t in ["거포형", "교타형", "준족형"]:
+    g = d9[d9["유형"] == t].sort_values("OPS", ascending=False)
+    print(f"  {t}: 평균 OPS {요약.loc[t, 'mean']:.3f} · 최고 {g.iloc[0]['선수명']} {g.iloc[0]['OPS']:.3f}"
+          f" · 최저 {g.iloc[-1]['선수명']} {g.iloc[-1]['OPS']:.3f} · 범위 {요약.loc[t, 'max'] - 요약.loc[t, 'min']:.3f}")
+print(f"유형별 평균 OPS의 가장 큰 차이: {요약['mean'].max() - 요약['mean'].min():.3f}")
+print(f"준족형 가운데 거포형 평균 OPS({요약.loc['거포형', 'mean']:.3f})보다 높은 선수:"
+      f" {int((준족['OPS'] > 요약.loc['거포형', 'mean']).sum())}명 / {len(준족)}명")
