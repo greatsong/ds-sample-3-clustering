@@ -1,4 +1,6 @@
-"""포스터(poster.html)에 넣을 그래프 3개와 QR 코드 2개를 SVG로 만들어 끼워 넣는 스크립트.
+"""v4 포스터(poster.html)에 넣을 그래프 3개와 QR 코드 2개를 SVG로 만들어 끼워 넣는 스크립트.
+
+v4 양식(요약 상자 · 그림 1~3 · 결과 구역의 산점도를 크게)에 맞춰 그래프 높이를 HIST_H·BARS_H·RESULT_H로 정한다. 폭은 단 폭 260mm 그대로.
 
 저장소 맨 위 폴더에서 실행한다: python3 code/poster_figs.py
 check.py와 같은 전처리·모델을 사용하므로 그래프의 값은 check.py 수치와 같다.
@@ -39,6 +41,8 @@ GRAY = "#9aa0aa"        # 선택하지 않은 모델·나머지 점
 DARK = "#4a4f57"        # 기준선
 # 단 폭(인치) = (594mm - 좌우 여백 2×26mm - 단 사이 22mm) / 2 = 260mm. poster.html의 --pad-x·--gap을 바꾸면 다시 계산한다
 COL_W = 260 / 25.4
+# v4 그래프 높이(인치): 단 폭은 같고 높이만 정한다
+HIST_H, BARS_H, RESULT_H = 2.4, 3.4, 5.5
 
 plt.rcParams.update({
     "svg.fonttype": "none",          # 글자를 글자로 남겨 브라우저 글꼴로 그린다
@@ -130,7 +134,7 @@ for r, c in zip(RATE, COUNT):
 Xs = StandardScaler().fit_transform(d[RATE])
 
 # 그래프 1(FIG:hist): 타석 분포(364명)와 기준 100타석
-fig, ax = plt.subplots(figsize=(COL_W, 2.3))
+fig, ax = plt.subplots(figsize=(COL_W, HIST_H))
 ax.hist(raw["타석"], bins=np.arange(0, 701, 20), color=ACCENT, edgecolor="#fff", linewidth=0.6)
 top = ax.get_ylim()[1]
 ax.axvline(100, color="#000", linestyle=(0, (4, 3)), linewidth=1.4)
@@ -159,7 +163,7 @@ names.append("DBSCAN")
 sils.append(None)
 pick = "K-평균 k=3(선택)"
 
-fig, ax = plt.subplots(figsize=(COL_W, 4.4))
+fig, ax = plt.subplots(figsize=(COL_W, BARS_H))
 y = np.arange(len(names))[::-1].astype(float)
 y[5:] -= 0.5                                       # K-평균 k별 막대와 방법별 막대 사이를 띄운다
 for yi, v, n in zip(y, sils, names):
@@ -195,7 +199,7 @@ for i in mean.index:
     name.setdefault(i, "교타형")
 d["유형"] = d["군집"].map(name)
 style = {"거포형": (ACCENT, "o"), "교타형": (LIGHT, "s"), "준족형": (GRAY, "^")}
-fig, ax = plt.subplots(figsize=(COL_W, 4.5))
+fig, ax = plt.subplots(figsize=(COL_W, RESULT_H))
 for t in ["준족형", "거포형", "교타형"]:
     g = d[d["유형"] == t]
     c, m = style[t]
