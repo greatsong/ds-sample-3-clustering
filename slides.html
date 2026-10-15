@@ -69,6 +69,11 @@
   .wbtn.on { background: #2b7fd6; border-color: #2b7fd6; color: #fff; }
   .wout { margin-left: auto; color: #b07a00; font-variant-numeric: tabular-nums; }
   .diagram svg { width: auto; max-width: 100%; max-height: 50vh; height: auto; display: block; margin: 0 auto; }
+  .steps { margin-top: 3vh; display: grid; grid-template-columns: 1fr 1.15fr; gap: 0 2.5vw; }
+  .steps ol { margin: 0; padding-left: 1.6em; font-size: clamp(15px, 1.75vw, 24px); }
+  .steps li { margin: 1.5vh 0; line-height: 1.4; }
+  .steps li::marker { color: var(--accent2); font-weight: 800; }
+  .steps b { color: var(--accent); font-weight: 800; margin-right: .4em; }
   .chapter { background: radial-gradient(ellipse at 20% 110%, #1c2434 0%, var(--bg) 60%); }
   .foot span { white-space: nowrap; }
   .foot { position: absolute; bottom: 3.4vh; left: 9vw; right: 9vw;
@@ -150,13 +155,22 @@
 <section class="slide">
   <div class="kicker">4 / 16 · 어떤 과정으로 분석했는지</div>
   <h2>어떤 과정으로 분석했는지</h2>
-  <ul class="facts">
-    <li>데이터 수집, 선생님 승인 (3차시)</li>
-    <li>타석 분포 확인, 비율 5개, 기준 타석 100 (4~6차시)</li>
-    <li>K-평균, 표준화 전후 비교 (7~8차시)</li>
-    <li>후보 모델 4개 비교 (9차시)</li>
-    <li>k 후보 비교, 유형 이름, AI 반론 (10~12차시)</li>
-  </ul>
+  <div class="steps">
+    <ol>
+      <li><b>수집</b> KBO 기록실 · 364명 × 25열</li>
+      <li><b>변수 선택</b> 타석당 비율 5개 · 타율 · OPS 제외</li>
+      <li><b>전처리</b> 타석 100 이상 155명만 사용</li>
+      <li><b>분할</b> 155명 전체 사용 · 표준화</li>
+      <li><b>기준선</b> k=2~6 실루엣 · 표준화 전 0.278</li>
+    </ol>
+    <ol start="6">
+      <li><b>후보 모델</b> K-평균 · 계층적 · DBSCAN · 가우시안 혼합</li>
+      <li><b>선택</b> K-평균 k=3 · 중계의 세 표현과 비교</li>
+      <li><b>평가</b> 실루엣 · 엘보우</li>
+      <li><b>해석</b> 유형별 평균 · 홈런-삼진 상관 · 유형별 OPS</li>
+      <li><b>한계 점검</b> 타석 기준 50 · 200 · 안정성 검사 안 함</li>
+    </ol>
+  </div>
 </section>
 
 <!-- 5 고려한 모델 -->
@@ -208,7 +222,7 @@
     <li>개수 대신 타석당 비율</li>
     <li>표준화: 실루엣 0.278 대신 <b>0.182</b>, 삼진율 쏠림 제거</li>
     <li>k=3: 최고점이 아님, 중계의 세 표현과 비교하려고 선택</li>
-    <li>타율 · OPS 추가 제안 거절: 실력으로 묶임</li>
+    <li>타율 · OPS 제외: 넣으면 실력 순서로 묶임</li>
   </ul>
 </section>
 

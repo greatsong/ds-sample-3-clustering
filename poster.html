@@ -76,8 +76,8 @@
   .sec b { color: var(--accent); font-weight: 800; }
   .lb { font-weight: 800; margin-right: .3em; }
   .q { font-weight: 800; }
-  .flow { font-weight: 700; color: var(--accent); }
-  .flow i { font-style: normal; color: var(--ink); font-weight: 400; margin: 0 .35em; }
+  .flow { font-weight: 700; color: var(--accent); font-size: .9em; }
+  .flow i { font-style: normal; color: var(--ink); font-weight: 400; margin: 0 .25em; }
   .cap { font-size: var(--fs-small); line-height: 1.35; }
   .fig svg { display: block; width: 100%; height: auto; }
   .final { font-weight: 800; }
@@ -131,12 +131,11 @@
 
       <section class="sec">
         <h2>1. 서론</h2>
-        <!-- 내용 시작: 연구 질문 1줄 · 왜 이 주제인가 3줄 · 이 포스터에서 보이는 것 1줄 -->
+        <!-- 내용 시작: 연구 질문 1줄 · 왜 이 주제인가 2줄 · 이 포스터에서 보이는 것 1줄 -->
         <p class="q">연구 질문: KBO 타자는 정말 세 유형으로 나뉘는가</p>
         <ul>
           <li>야구 중계에서 자주 듣는 "거포", "준족", "교타자"라는 말</li>
           <li>이 말이 기록에서 나온 것인지, 해설자의 인상에서 나온 것인지 궁금함</li>
-          <li>9차시 군집 활동을 2026 정규 시즌 타자 기록에 적용</li>
         </ul>
         <p><span class="lb">이 포스터:</span>타석당 비율 다섯 개로 묶은 K-평균 결과, 그 해석과 한계</p>
         <!-- 내용 끝 -->
@@ -632,7 +631,7 @@ Q 204.236056 41.8536 146.037925 41.8536
       <section class="sec">
         <h2>3. 방법</h2>
         <!-- 내용 시작: 분석 흐름 · 후보 모델 표 · 선택 이유 2줄 · 모델 소개 표(행 3, 열 6) · 평가지표 2줄 -->
-        <p class="flow">승인<i>→</i>전처리<i>→</i>기준선<i>→</i>후보 모델<i>→</i>선택<i>→</i>해석</p>
+        <p class="flow">수집(364명)<i>→</i>변수 선택(비율 5개)<i>→</i>전처리(155명)<i>→</i>분할(전체·표준화)<i>→</i>기준선(k&nbsp;후보)<i>→</i>후보&nbsp;4종&nbsp;비교<i>→</i>선택(K-평균)<i>→</i>평가(실루엣·엘보우)<i>→</i>해석(상관·OPS)</p>
         <table class="t">
           <tr><th>후보 모델(155명 · 표준화 다섯 비율 · 묶음 3개)</th><th class="r">실루엣</th><th class="r">묶음 크기</th><th class="r">K-평균과 겹침</th></tr>
           <tr class="pick"><td>K-평균(k=3, 선택)</td><td class="r">0.182</td><td class="r">57 · 53 · 45</td><td class="r">1.00</td></tr>
@@ -1775,12 +1774,12 @@ z
 
       <section class="sec">
         <h2>5. 해석과 결론</h2>
-        <!-- 내용 시작: 해석 3~4문장 · AI 반론을 받고 고친 점 2줄 · 결론 한 문장 -->
+        <!-- 내용 시작: 해석 3~4문장 · 변수 결정 1줄 · 결론 한 문장 -->
         <ul>
           <li><b>홈런 많으면 삼진도 많지만, 잘 치는 거포는 삼진이 적음</b><br>홈런율-삼진율 상관 <b>0.337</b> · 거포형 안 삼진율-OPS 상관 <b>-0.415</b> · 홈런 1위 김도영 삼진율 0.174(평균 0.200)</li>
           <li><b>준족형 대부분은 빠른 선수가 아니라 삼진이 적은 선수</b><br>준족형 도루 중앙값 <b>3개</b> · 도루 상위 5명이 전체 도루의 <b>25.2%</b></li>
           <li><b>유형은 실력 순서가 아니라 치는 방식의 차이</b><br>유형 사이 평균 OPS 차이 <b>0.116</b> · 거포형 안 오스틴 1.062, 김영웅 0.496</li>
-          <li><span class="lb">AI 반론:</span>k=3은 자의적임 → k 후보 표 추가 · 타율·OPS 추가 → 실력 순으로 묶여 거절</li>
+          <li><span class="lb">타율·OPS 제외:</span>넣으면 묶음이 OPS 0.841 · 0.704 · 0.645 순서로 나뉨</li>
         </ul>
         <p class="final">세 유형으로 깔끔하게 나뉘지 않음. 거포 특징은 분명, 준족은 소수 개인, 유형은 실력이 아닌 방식의 차이</p>
         <!-- 내용 끝 -->
