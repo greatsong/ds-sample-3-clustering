@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>기록실 3인방 · KBO 타자 유형 발표</title>
+<title>기록실 3인방 발표 · KBO 타자 유형</title>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
@@ -56,7 +57,7 @@
   .src { margin-top: 1.4vh; font-size: clamp(12px, 1.2vw, 16px); color: var(--ink-dim); }
   .diagram { margin-top: 3vh; background: #f7f3e8; border-radius: 16px; padding: 2vh 1.4vw; overflow-x: auto; }
   .diagram.short svg { max-height: var(--dh, 40vh); }
-  /* 인터랙티브 위젯: 밝은 상자 안 */
+  /* 인터랙티브 위젯, 밝은 상자 안 */
   .widget { color: #1c2230; }
   .diagram .widget svg { width: auto; max-width: 100%; max-height: var(--wh, 44vh); height: auto; display: block; margin: 0 auto; }
   .wctl { display: flex; flex-wrap: wrap; align-items: center; gap: .8vh 1.4vw; margin-top: 1.2vh;
@@ -80,129 +81,178 @@
     font-size: clamp(11px, 1.1vw, 14px); }
 @media (max-width: 760px) { .dots { display: none; } }
 </style>
-
+<style>
+  .bars { margin-top: 3.4vh; display: flex; flex-direction: column; gap: 2.2vh; max-width: 62em; }
+  .bar { display: grid; grid-template-columns: 15em 1fr 6em; align-items: center; gap: 1.2vw;
+    font-size: clamp(15px, 1.8vw, 25px); }
+  .bar .lab { font-weight: 700; white-space: nowrap; }
+  .bar .track { background: #1b2130; border-radius: 8px; height: 4.6vh; overflow: hidden; }
+  .bar .track i { display: block; height: 100%; background: var(--accent2); border-radius: 8px; }
+  .bar .track i.gray { background: #59627a; }
+  .bar .track i.hi { background: var(--accent); }
+  .bar .num { font-weight: 800; text-align: right; font-variant-numeric: tabular-nums; }
+  .qbank { margin-top: 3.4vh; padding-left: 1.4em; color: var(--ink-dim); font-size: clamp(13px, 1.35vw, 18px); line-height: 1.8; }
+</style>
+<style>
+  .withimg .plot { margin-top: 0; flex: 0 0 auto; padding: 1.4vh 1vw; }
+  .chart { width: 38vw; height: 46vh; }
+  .nw { white-space: nowrap; }
+  .small-facts li { font-size: clamp(17px, 2vw, 28px); }
+</style>
+<style>
+  .chart { width: 40vw; height: 48vh; }
+  table.mini.cmp { font-size: clamp(15px, 1.75vw, 25px); }
+</style>
 </head>
 <body>
 
-<section class="slide cover chapter">
-  <div class="kicker">1 / 9 · 제목</div>
+<!-- 1 제목 -->
+<section class="slide chapter">
+  <div class="kicker">1 / 12 · 제목</div>
   <h1>KBO 타자는 정말<br>'거포형·준족형·교타형'<br>세 유형으로 나뉘는가</h1>
   <p class="sub">기록실 3인방 · 10101 홍길동 · 10102 김영희 · 10103 이철수</p>
-  <p class="small">선생님이 만든 가상 팀의 샘플 · 수치는 code/check.py 실제 계산값</p>
+  <p class="small">선생님이 만든 가상 팀의 샘플 · 데이터와 수치는 실제 계산값</p>
 </section>
 
+<!-- 2 데이터셋 -->
 <section class="slide">
-  <div class="kicker">2 / 9 · 왜 이 주제인가</div>
-  <h2>중계에서 듣는 세 표현, 기록에도 있을까</h2>
+  <div class="kicker">2 / 12 · 우리 팀의 데이터셋</div>
+  <h2>우리 팀의 데이터셋</h2>
+  <div class="withimg">
+    <ul class="facts txt small-facts">
+      <li>KBO 공식 기록실, 2026 정규 시즌 타자 기록</li>
+      <li><b>364명 · 25개 열</b>, 2026-10-15 수집</li>
+      <li>타석당 비율 5개: 홈런 · 도루 · 볼넷 · <span class="nw">삼진 · 2루타</span></li>
+      <li>타석 100 이상 <b>155명</b>만 사용 <span class="nw">(타석 0인 선수 <b>73명</b>)</span></li>
+    </ul>
+    <div class="diagram plot"><div class="chart" id="g2"></div></div>
+  </div>
+</section>
+
+<!-- 3 선택 이유 -->
+<section class="slide">
+  <div class="kicker">3 / 12 · 이 문제를 선택한 이유</div>
+  <h2>이 문제를 선택한 이유</h2>
   <ul class="facts">
-    <li>야구 중계에서 자주 듣는 표현: <b>"거포"</b>, <b>"준족"</b>, <b>"교타자"</b></li>
-    <li>기록에서 나온 말인지, 해설자의 인상에서 나온 말인지 확인한 적 없음</li>
-    <li>9차시 축구 선수 묶기를 2026 시즌 야구 타자에 적용</li>
+    <li>중계에서 자주 듣는 말: <b>"거포"</b> · <b>"준족"</b> · <b>"교타자"</b></li>
+    <li>기록에서 나온 말인지, 해설자의 인상인지</li>
+    <li>수업에서 축구 선수를 묶은 방법을 야구 타자에 적용</li>
+    <li>팀원 궁금증: 교타자의 기록 · 타석 수가 다른 선수 비교 · 아는 이름대로 나뉘는지</li>
   </ul>
-  <p class="point">선수 이름은 빼고 <b>기록만으로</b> 묶어도 세 유형이 나오는지 확인</p>
 </section>
 
+<!-- 4 과정 -->
 <section class="slide">
-  <div class="kicker">3 / 9 · 데이터</div>
-  <h2>2026 KBO 정규 시즌 타자 기록</h2>
+  <div class="kicker">4 / 12 · 어떤 과정으로 분석했는지</div>
+  <h2>어떤 과정으로 분석했는지</h2>
+  <ul class="facts">
+    <li>데이터 수집, 선생님 승인 (3차시)</li>
+    <li>타석 분포 확인, 비율 5개, 기준 타석 100 (4~6차시)</li>
+    <li>K-평균, 표준화 전후 비교 (7~8차시)</li>
+    <li>후보 모델 4개 비교 (9차시)</li>
+    <li>k 후보 비교, 유형 이름, AI 반론 (10~12차시)</li>
+  </ul>
+</section>
+
+<!-- 5 고려한 모델 -->
+<section class="slide">
+  <div class="kicker">5 / 12 · 어떤 모델을 고려했는지</div>
+  <h2>어떤 모델을 고려했는지</h2>
+  <table class="mini cmp">
+    <tr><th>모델</th><th>실루엣</th><th>묶음 크기</th><th>K-평균과 겹침</th></tr>
+    <tr><td>K-평균(k=3)</td><td><em>0.182</em></td><td>57 · 53 · 45</td><td>1.00</td></tr>
+    <tr><td>계층적 군집(ward)</td><td>0.133</td><td>74 · 48 · 33</td><td>0.77</td></tr>
+    <tr><td>DBSCAN</td><td>계산 불가</td><td>132 (잡음 23명)</td><td>비교 불가</td></tr>
+    <tr><td>가우시안 혼합(3개)</td><td>0.056</td><td>71 · 57 · 27</td><td>0.43</td></tr>
+  </table>
+  <p class="small">같은 155명 · 표준화 다섯 비율 · DBSCAN 반경 1.5, 최소 이웃 10</p>
+</section>
+
+<!-- 6 선택 이유 -->
+<section class="slide">
+  <div class="kicker">6 / 12 · 왜 이 모델을 선택했는지</div>
+  <h2>왜 이 모델을 선택했는지</h2>
+  <ul class="facts">
+    <li>K-평균: 수업에서 배운 방법, 계산 과정 설명 가능</li>
+    <li>묶음 평균으로 유형 이름 붙이기 쉬움</li>
+    <li>실루엣 <b>0.182</b>, 네 방법 가운데 최고</li>
+    <li>계층적 군집과 <b>119/155명</b> 같은 묶음</li>
+    <li>가우시안 혼합 · DBSCAN과의 차이: 경계가 흐릿하다는 근거</li>
+  </ul>
+</section>
+
+<!-- 7 평가지표 -->
+<section class="slide">
+  <div class="kicker">7 / 12 · 우리가 사용한 평가지표</div>
+  <h2>우리가 사용한 평가지표</h2>
+  <ul class="facts small-facts">
+    <li>실루엣: 자기 묶음과 가깝고 옆 묶음과 먼 정도 (-1~1)</li>
+    <li>군집 내 제곱합(엘보우): 묶음 가운데까지 거리 제곱의 합, 꺾이는 곳 확인</li>
+    <li>우리 결과: 표준화 후 k=3, 실루엣 <b>0.182</b></li>
+    <li>기준선: k=2~6 실루엣 <b>0.182~0.204</b> · 표준화 없이 <b>0.278</b></li>
+    <li>고른 이유: 정답이 없는 군집에서 묶음 사이 거리를 확인</li>
+  </ul>
+</section>
+
+<!-- 8 결정 -->
+<section class="slide">
+  <div class="kicker">8 / 12 · 모델링 과정에서 우리 팀이 결정한 것</div>
+  <h2>모델링 과정에서 우리 팀이 결정한 것</h2>
+  <ul class="facts small-facts">
+    <li>타석 100 이상 <b>155명</b> (50이면 196명, 200이면 111명)</li>
+    <li>개수 대신 타석당 비율</li>
+    <li>표준화: 실루엣 0.278 대신 <b>0.182</b>, 삼진율 쏠림 제거</li>
+    <li>k=3: 최고점이 아님, 중계의 세 표현과 비교하려고 선택</li>
+    <li>타율 · OPS 추가 제안 거절: 실력으로 묶임</li>
+  </ul>
+</section>
+
+<!-- 9 해석 -->
+<section class="slide">
+  <div class="kicker">9 / 12 · 최종 분석 결과에 대한 우리 팀의 해석</div>
+  <h2>최종 분석 결과에 대한 우리 팀의 해석</h2>
+  <div class="withimg">
+    <div class="diagram plot"><div class="chart" id="g9"></div></div>
+    <ul class="facts txt small-facts">
+      <li>거포형 <b>53명</b>: 홈런율 평균의 <b>1.76배</b></li>
+      <li>교타형 <b>45명</b>: 2루타율 <b>1.36배</b></li>
+      <li>준족형 <b>57명</b>: 도루율 <b>1.75배</b>, 가장 약한 이름</li>
+      <li>결론: 세 유형과 비슷한 경향, 경계는 흐릿</li>
+    </ul>
+  </div>
+  <p class="small">그래프는 다섯 비율 가운데 홈런율과 도루율 두 개만 표시</p>
+</section>
+
+<!-- 10 추가 연구 -->
+<section class="slide">
+  <div class="kicker">10 / 12 · 이후 추가로 연구한다면</div>
+  <h2>이후 추가로 연구한다면 더 해 보고 싶은 것</h2>
   <table class="mini">
-    <tr><th>항목</th><th>내용</th></tr>
-    <tr><td>출처</td><td>KBO 공식 기록실 타자 기본 1·2, 주루 화면 (2026-10-15 수집)</td></tr>
-    <tr><td>크기</td><td><em>364행</em>(선수 1명이 1행) × <em>25열</em></td></tr>
-    <tr><td>사용한 열</td><td>타석 · 홈런 · 도루 · 볼넷 · 삼진 · 2루타</td></tr>
-    <tr><td>만든 변수</td><td>타석당 비율 5개: 홈런율 · 도루율 · 볼넷율 · 삼진율 · 2루타율</td></tr>
-    <tr><td>개인 정보</td><td>없음 (프로 선수의 공개 경기 기록)</td></tr>
+    <tr><th>구분</th><th>키워드</th></tr>
+    <tr><td>더 해 볼 분석</td><td>2024 · 2025 시즌 추가로 유형 유지 확인, 투수 기록에 적용</td></tr>
+    <tr><td>교과 연계</td><td>체육: 경기 기록 분석 · 수학: 표준화, 거리와 평균 · 정보: 데이터 자동 수집</td></tr>
+    <tr><td>진로 분야</td><td>스포츠 데이터 분석가 · 구단 전력 분석원 · 스포츠 기자</td></tr>
   </table>
 </section>
 
+<!-- 11 느낀 점 -->
 <section class="slide">
-  <div class="kicker">4 / 9 · 데이터의 구멍과 전처리 판단</div>
-  <h2>타석이 적은 선수는 비율이 크게 튐</h2>
-  <div class="split" style="margin-top:2.4vh">
-    <div class="card"><div class="t">타석 0</div><div class="v">73명</div><div class="d">비율 계산 불가</div></div>
-    <div class="card"><div class="t">타석 중앙값</div><div class="v">57</div><div class="d">타석 10 미만 118명</div></div>
-    <div class="card"><div class="t">홈런율 1위</div><div class="v">0.143</div><div class="d">타석 7인 선수</div></div>
-  </div>
-  <ul class="facts" style="margin-top:1.4vh">
-    <li>개수 대신 <b>타석당 비율</b>: 타석 수가 다른 선수를 같은 기준으로 비교</li>
-    <li><b>타석 100 이상 155명</b>만 사용 (50이면 196명, 200이면 111명)</li>
-    <li>키·몸무게·생년월일·포지션 빈칸 11명: 쓰지 않는 열이라 영향 없음</li>
+  <div class="kicker">11 / 12 · 느끼고 배운 점</div>
+  <h2>AI를 활용하고 데이터를 분석하며 느끼고 배운 점</h2>
+  <ul class="facts small-facts">
+    <li>홍길동: "k를 데이터가 정해 줄 거라고 생각했는데 결국 우리가 정하고 이유를 써야 했다."</li>
+    <li>김영희: "평균표를 안 봤으면 0.278만 믿고 발표할 뻔했다."</li>
+    <li>이철수: "AI 제안을 말로만 거절하지 않고 직접 돌려 보고 거절하니 이유를 말하기 쉬웠다."</li>
   </ul>
+  <p class="point">AI 활용에서 배운 것: <b>높은 점수보다 질문에 맞는 결과</b> · <b>제안은 직접 돌려 보고 판단</b></p>
 </section>
 
-<section class="slide">
-  <div class="kicker">5 / 9 · 방법과 기준선</div>
-  <h2>K-평균 군집 · 기준선 두 가지</h2>
-  <div class="split" style="margin-top:2vh;align-items:flex-start">
-    <div>
-      <div class="small" style="margin-top:0">① k 후보 비교 (표준화 후)</div>
-      <table class="mini" style="margin-top:1vh">
-        <tr><th>k</th><th>실루엣</th><th>군집 내 제곱합</th></tr>
-        <tr><td>2</td><td>0.197</td><td>608.5</td></tr>
-        <tr><td>3</td><td><em>0.182</em></td><td>515.9</td></tr>
-        <tr><td>4</td><td>0.189</td><td>441.9</td></tr>
-        <tr><td>5</td><td>0.204</td><td>378.3</td></tr>
-        <tr><td>6</td><td>0.202</td><td>342.7</td></tr>
-      </table>
-    </div>
-    <div style="flex:1;min-width:0">
-      <div class="small" style="margin-top:0">② 표준화 전후 비교 (k=3)</div>
-      <div class="card" style="margin-top:1vh"><div class="t">표준화 없이</div><div class="v" style="font-size:clamp(24px,3vw,42px);margin-top:.6vh">0.278</div><div class="d">삼진율 0.139 · 0.208 · 0.284의 세 단계로만 갈림<br>삼진율의 표준편차 0.062가 가장 큼</div></div>
-      <div class="card" style="margin-top:1.6vh"><div class="t">표준화 후 (채택)</div><div class="v" style="font-size:clamp(24px,3vw,42px);margin-top:.6vh">0.182</div><div class="d">다섯 비율이 고르게 반영 · 묶음 크기 45 · 53 · 57</div></div>
-    </div>
-  </div>
-</section>
-
-<section class="slide">
-  <div class="kicker">6 / 9 · 결과</div>
-  <h2 style="font-size:clamp(22px,2.6vw,36px)">표준화 후 k=3 · 실루엣 0.182</h2>
-  <div class="split" style="margin-top:1.6vh;flex-wrap:nowrap;align-items:center">
-    <table class="mini" style="margin-top:0;font-size:clamp(13px,1.45vw,20px)">
-      <tr><th>유형</th><th>인원</th><th>홈런율</th><th>도루율</th><th>볼넷율</th><th>삼진율</th><th>2루타율</th></tr>
-      <tr><td>준족형</td><td>57</td><td>0.008</td><td><em>0.025</em></td><td>0.095</td><td><em>0.167</em></td><td>0.030</td></tr>
-      <tr><td>거포형</td><td>53</td><td><em>0.041</em></td><td>0.006</td><td>0.101</td><td>0.247</td><td>0.037</td></tr>
-      <tr><td>교타형</td><td>45</td><td>0.022</td><td>0.011</td><td><em>0.077</em></td><td>0.186</td><td><em>0.053</em></td></tr>
-      <tr><td>전체 평균</td><td>155</td><td>0.023</td><td>0.014</td><td>0.092</td><td>0.200</td><td>0.039</td></tr>
-    </table>
-    <div id="scatter" style="flex:1;min-width:0;height:46vh;background:#f7f3e8;border-radius:14px"></div>
-  </div>
-  <p class="small" style="margin-top:1.4vh">유형 이름은 평균표를 보고 팀이 붙인 해석 · 그래프는 다섯 비율 가운데 두 개만 표시</p>
-</section>
-
-<section class="slide">
-  <div class="kicker">7 / 9 · 해석</div>
-  <h2>세 유형과 비슷한 경향, 경계는 흐릿함</h2>
-  <ul class="facts" style="margin-top:0">
-    <li>실루엣: 자기 묶음과 얼마나 가깝고 옆 묶음과 얼마나 먼지 비교한 값 · <b>0.182</b>는 많은 선수가 경계 근처에 있다는 뜻</li>
-    <li>k=3은 다섯 후보 가운데 최저점 (k=5 0.204, k=2 0.197) · <b>"세 유형"은 우리가 고른 k</b></li>
-    <li>AI 반론 "k=3은 자의적": 받아들여 k 후보 표를 README에 추가</li>
-    <li>AI 반론 "실루엣이 낮아 의미 없음": 뚜렷이 나뉘지 않는다는 것 자체가 질문의 답</li>
-    <li>타율·OPS 추가 제안 거절: 넣으면 OPS 0.841·0.704·0.645로 갈려 실력으로 묶임</li>
-  </ul>
-</section>
-
-<section class="slide">
-  <div class="kicker">8 / 9 · 한계</div>
-  <h2>이 결과를 믿기 어려운 이유</h2>
-  <ul class="facts">
-    <li>2026년 한 시즌 기록만 사용</li>
-    <li>최소 타석 100은 팀이 정한 기준 · 50으로 낮추면 준족형이 <b>11명</b>으로 줄고 115명 묶음은 특징이 없어짐</li>
-    <li>유형 이름은 군집 평균을 보고 팀이 붙인 해석 · 준족형은 도루율 0.025로 가장 약한 이름</li>
-  </ul>
-  <p class="point">이 묶음으로 <b>선수 가치를 매기면 안 됨</b> · 묶음은 치는 방식이지 실력이 아님</p>
-</section>
-
+<!-- 12 마무리 -->
 <section class="slide chapter">
-  <div class="kicker">9 / 9 · 질문 받겠습니다</div>
-  <h1>질문 받겠습니다</h1>
-  <p class="sub">앱: index.html · 수치 확인: code/check.py · 기록: log/01.md ~ 12.md</p>
-  <ul class="facts" style="margin-top:4vh">
-    <li style="font-size:clamp(14px,1.5vw,20px);margin:1vh 0">이 그래프(또는 숫자)는 무엇을 뜻합니까</li>
-    <li style="font-size:clamp(14px,1.5vw,20px);margin:1vh 0">아무 모델도 쓰지 않았을 때(기준선)보다 얼마나 나아졌습니까</li>
-    <li style="font-size:clamp(14px,1.5vw,20px);margin:1vh 0">이 결과를 믿을 수 없는 이유를 하나 말해 보십시오</li>
-    <li style="font-size:clamp(14px,1.5vw,20px);margin:1vh 0">여러분 팀은 이 결과에서 무엇을 새로 알게 되었습니까</li>
-    <li style="font-size:clamp(14px,1.5vw,20px);margin:1vh 0">주제를 왜 이것으로 정했습니까</li>
-  </ul>
+  <div class="kicker">12 / 12 · 마무리</div>
+  <h1>감사합니다</h1>
+  <p class="sub">질문 받겠습니다</p>
+  <p class="small">기록실 3인방 · 홍길동 · 김영희 · 이철수</p>
 </section>
 
 <div class="hint">← → 이동 · Home 처음으로</div>
@@ -212,41 +262,57 @@
   <span id="pageno"></span>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
 <script>
-  const 점 = {"거포형": {"x": [0.0641, 0.0689, 0.0759, 0.0534, 0.0314, 0.0508, 0.0596, 0.0358, 0.0428, 0.0455, 0.0535, 0.04, 0.0542, 0.0435, 0.031, 0.0234, 0.0333, 0.0336, 0.0293, 0.0417, 0.0337, 0.0378, 0.0392, 0.0576, 0.0279, 0.0415, 0.0162, 0.0656, 0.0559, 0.0381, 0.032, 0.0335, 0.0446, 0.0379, 0.0517, 0.0246, 0.0203, 0.0312, 0.0265, 0.0267, 0.0108, 0.0331, 0.0398, 0.0422, 0.026, 0.0719, 0.0205, 0.0629, 0.0282, 0.0227, 0.0769, 0.0504, 0.0196], "y": [0.0078, 0.0156, 0.0185, 0.0, 0.0035, 0.0053, 0.0, 0.0179, 0.0037, 0.0038, 0.0019, 0.018, 0.0022, 0.0, 0.0088, 0.0, 0.0024, 0.012, 0.0073, 0.0, 0.0, 0.0, 0.003, 0.0, 0.0031, 0.0064, 0.0, 0.0098, 0.0033, 0.0138, 0.0285, 0.0297, 0.0037, 0.0, 0.0043, 0.0, 0.0051, 0.0052, 0.0106, 0.0, 0.0161, 0.0, 0.0, 0.0, 0.0, 0.0065, 0.0068, 0.0, 0.0, 0.0, 0.0, 0.0084, 0.0196], "t": ["오스틴 (LG)", "힐리어드 (KT)", "김도영 (KIA)", "나성범 (KIA)", "최형우 (삼성)", "노시환 (한화)", "강백호 (한화)", "페라자 (한화)", "양의지 (두산)", "김재환 (SSG)", "데이비슨 (키움)", "박건우 (NC)", "한동희 (롯데)", "허인서 (한화)", "오지환 (LG)", "문보경 (LG)", "박동원 (LG)", "안현민 (KT)", "전병우 (삼성)", "김형준 (NC)", "박찬혁 (키움)", "강민호 (삼성)", "전의산 (SSG)", "문정빈 (LG)", "김웅빈 (키움)", "히우라 (키움)", "윤동희 (롯데)", "최정 (SSG)", "이재현 (삼성)", "임병욱 (키움)", "강승호 (두산)", "오태곤 (SSG)", "장성우 (KT)", "블레인 (NC)", "고명준 (SSG)", "김영웅 (삼성)", "윤준호 (두산)", "채은성 (한화)", "이형종 (키움)", "여동욱 (키움)", "박주홍 (키움)", "양석환 (두산)", "세베리노 (두산)", "장준원 (KT)", "이주헌 (LG)", "박정현 (한화)", "신재인 (NC)", "이재원 (LG)", "박상준 (KIA)", "김도환 (삼성)", "아데를린 (KIA)", "한지윤 (한화)", "이진영 (한화)"]}, "준족형": {"x": [0.008, 0.0082, 0.0085, 0.0305, 0.0125, 0.0018, 0.0019, 0.0131, 0.0094, 0.0, 0.0096, 0.0, 0.0, 0.0122, 0.002, 0.0, 0.0198, 0.0067, 0.0157, 0.0024, 0.0, 0.0341, 0.0082, 0.0, 0.0168, 0.0101, 0.0069, 0.0, 0.0116, 0.0, 0.0121, 0.0041, 0.0, 0.0, 0.0229, 0.0046, 0.0048, 0.0145, 0.0146, 0.0057, 0.0, 0.0, 0.0, 0.0126, 0.0, 0.0064, 0.0, 0.014, 0.0282, 0.0214, 0.0072, 0.0074, 0.0074, 0.0, 0.0169, 0.0085, 0.0], "y": [0.008, 0.0544, 0.0711, 0.0508, 0.0891, 0.0346, 0.0056, 0.0373, 0.0546, 0.0415, 0.0058, 0.0058, 0.1087, 0.0385, 0.002, 0.0262, 0.0, 0.0067, 0.0515, 0.0024, 0.0179, 0.021, 0.0, 0.0, 0.0034, 0.0, 0.0172, 0.0687, 0.0, 0.0977, 0.0324, 0.0082, 0.0848, 0.0183, 0.0, 0.0323, 0.0429, 0.0048, 0.0243, 0.0, 0.0359, 0.0, 0.0062, 0.0126, 0.0191, 0.0127, 0.0196, 0.014, 0.0211, 0.0071, 0.0216, 0.0074, 0.0296, 0.0, 0.0085, 0.0171, 0.028], "t": ["박성한 (SSG)", "박찬호 (두산)", "박해민 (LG)", "김주원 (NC)", "박민우 (NC)", "정준재 (SSG)", "김선빈 (KIA)", "정수빈 (두산)", "류지혁 (삼성)", "김지찬 (삼성)", "김민석 (두산)", "홍창기 (LG)", "황성빈 (롯데)", "김성윤 (삼성)", "김상수 (KT)", "신민재 (LG)", "안치홍 (키움)", "서건창 (키움)", "심우준 (한화)", "김민혁 (KT)", "구본혁 (LG)", "박승규 (삼성)", "한승택 (KT)", "권혁빈 (키움)", "권희동 (NC)", "최주환 (키움)", "박지훈 (두산)", "장두성 (롯데)", "전준우 (롯데)", "최정원 (NC)", "안상현 (SSG)", "문성주 (LG)", "조수행 (두산)", "김규성 (KIA)", "최인호 (한화)", "이원석 (한화)", "한태양 (롯데)", "한유섬 (SSG)", "박민 (KIA)", "손아섭 (두산)", "오재원 (한화)", "이강민 (KT)", "브룩스 (키움)", "서호철 (NC)", "박정우 (KIA)", "황영묵 (한화)", "김한별 (NC)", "한석현 (NC)", "김성욱 (SSG)", "김대한 (두산)", "이지영 (SSG)", "데일 (KIA)", "이유찬 (두산)", "최재훈 (한화)", "김헌곤 (삼성)", "양우현 (삼성)", "류승민 (두산)"]}, "교타형": {"x": [0.0133, 0.0283, 0.0416, 0.0225, 0.0255, 0.0224, 0.0225, 0.0342, 0.0173, 0.0302, 0.0362, 0.0325, 0.0288, 0.0244, 0.0157, 0.0183, 0.0369, 0.0487, 0.0387, 0.0195, 0.005, 0.0101, 0.0179, 0.0208, 0.0211, 0.0399, 0.024, 0.0124, 0.0287, 0.0115, 0.008, 0.0241, 0.0161, 0.0042, 0.0221, 0.0047, 0.0219, 0.0172, 0.0185, 0.0065, 0.0214, 0.0, 0.0234, 0.0177, 0.0194], "y": [0.0414, 0.0016, 0.0032, 0.0, 0.0187, 0.0293, 0.0363, 0.0378, 0.025, 0.0121, 0.004, 0.0, 0.0066, 0.0111, 0.009, 0.0023, 0.0046, 0.0023, 0.0073, 0.0, 0.0075, 0.0025, 0.0, 0.0, 0.0, 0.0171, 0.024, 0.0031, 0.0287, 0.0115, 0.0199, 0.0, 0.0, 0.0126, 0.0, 0.0, 0.0109, 0.0057, 0.0, 0.0065, 0.0143, 0.0233, 0.0, 0.0, 0.0388], "t": ["최원준 (KT)", "레이예스 (롯데)", "디아즈 (삼성)", "김현수 (KT)", "문현빈 (한화)", "김호령 (KIA)", "최지훈 (SSG)", "박재현 (KIA)", "전민재 (롯데)", "구자욱 (삼성)", "에레디아 (SSG)", "고승민 (롯데)", "김태연 (한화)", "안재석 (두산)", "이우성 (NC)", "나승엽 (롯데)", "송찬의 (LG)", "카스트로 (KIA)", "박준순 (두산)", "김건희 (키움)", "이도윤 (한화)", "허경민 (KT)", "한준수 (KIA)", "손성빈 (롯데)", "조형우 (SSG)", "김휘집 (NC)", "천재환 (NC)", "추재현 (키움)", "카메론 (두산)", "권동진 (KT)", "천성호 (LG)", "김태군 (KIA)", "하주석 (KIA)", "류현인 (KT)", "노진혁 (롯데)", "오윤석 (KT)", "손호영 (롯데)", "안중열 (NC)", "오명진 (두산)", "박승욱 (롯데)", "박시원 (NC)", "배정대 (KT)", "유강남 (롯데)", "김동헌 (키움)", "이주형 (키움)"]}};
-  const 색 = { "준족형": "#2b7fd6", "거포형": "#d64545", "교타형": "#2a9d5c" };
-  let 그렸음 = false;
-  function 그리기() {
-    if (그렸음 || typeof Plotly === "undefined") return;
-    그렸음 = true;
-    const traces = Object.keys(점).map(n => ({
-      x: 점[n].x, y: 점[n].y, text: 점[n].t, name: n, mode: "markers", type: "scatter",
-      marker: { color: 색[n], size: 8, opacity: .8 }, hovertemplate: "%{text}<br>홈런율 %{x:.3f}<br>도루율 %{y:.3f}<extra>" + n + "</extra>"
-    }));
-    Plotly.newPlot("scatter", traces, {
-      margin: { l: 56, r: 12, t: 12, b: 48 }, paper_bgcolor: "#f7f3e8", plot_bgcolor: "#f7f3e8",
-      xaxis: { title: "홈런율 (홈런 ÷ 타석)" }, yaxis: { title: "도루율 (도루 ÷ 타석)" },
-      legend: { orientation: "h", y: 1.08 }, font: { size: 13 }
-    }, { displayModeBar: false, responsive: true });
-  }
   const slides = [...document.querySelectorAll('.slide')];
   const dots = document.getElementById('dots');
   slides.forEach(() => dots.appendChild(document.createElement('i')));
   let cur = 0;
+
+  // 그래프: plotly, 데이터는 data/kbo_hitters_2026_full.csv와 code/check.py 결과에서 뽑은 값
+  const PA = [676,640,639,636,627,625,622,607,593,591,590,589,581,581,578,574,571,570,561,558,556,549,538,537,536,531,530,527,523,520,519,518,506,500,497,497,493,493,489,461,460,458,454,452,452,451,450,447,446,437,434,431,428,420,420,417,413,410,409,408,401,396,390,390,385,381,379,365,356,351,344,333,332,330,326,323,322,314,313,308,305,304,298,296,290,289,281,269,269,264,262,261,259,256,251,249,248,247,244,238,232,226,224,219,218,217,215,210,207,206,203,197,192,189,187,186,183,181,176,176,174,167,166,163,162,161,159,157,157,154,153,153,153,146,143,143,142,142,140,140,139,135,135,132,130,129,128,122,119,118,117,113,107,103,102,99,98,98,96,92,92,91,89,85,84,81,81,79,78,77,76,72,71,67,66,65,65,64,64,63,57,57,57,56,56,55,55,55,54,53,53,52,52,51,51,50,49,46,46,44,44,41,40,40,38,37,37,36,35,34,34,33,32,30,28,28,28,26,26,25,24,24,24,22,22,21,20,20,20,20,20,18,17,16,15,15,14,14,13,13,13,13,12,12,12,11,9,8,8,8,8,7,7,7,6,6,6,6,6,6,5,5,5,5,4,4,4,4,4,3,3,3,3,3,3,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];  // 타석, 364명
+  const 점 = {"거포형": {"x": [0.0641, 0.0689, 0.0759, 0.0534, 0.0314, 0.0508, 0.0596, 0.0358, 0.0428, 0.0455, 0.0535, 0.04, 0.0542, 0.0435, 0.031, 0.0234, 0.0333, 0.0336, 0.0293, 0.0417, 0.0337, 0.0378, 0.0392, 0.0576, 0.0279, 0.0415, 0.0162, 0.0656, 0.0559, 0.0381, 0.032, 0.0335, 0.0446, 0.0379, 0.0517, 0.0246, 0.0203, 0.0312, 0.0265, 0.0267, 0.0108, 0.0331, 0.0398, 0.0422, 0.026, 0.0719, 0.0205, 0.0629, 0.0282, 0.0227, 0.0769, 0.0504, 0.0196], "y": [0.0078, 0.0156, 0.0185, 0.0, 0.0035, 0.0053, 0.0, 0.0179, 0.0037, 0.0038, 0.0019, 0.018, 0.0022, 0.0, 0.0088, 0.0, 0.0024, 0.012, 0.0073, 0.0, 0.0, 0.0, 0.003, 0.0, 0.0031, 0.0064, 0.0, 0.0098, 0.0033, 0.0138, 0.0285, 0.0297, 0.0037, 0.0, 0.0043, 0.0, 0.0051, 0.0052, 0.0106, 0.0, 0.0161, 0.0, 0.0, 0.0, 0.0, 0.0065, 0.0068, 0.0, 0.0, 0.0, 0.0, 0.0084, 0.0196], "t": ["오스틴 (LG)", "힐리어드 (KT)", "김도영 (KIA)", "나성범 (KIA)", "최형우 (삼성)", "노시환 (한화)", "강백호 (한화)", "페라자 (한화)", "양의지 (두산)", "김재환 (SSG)", "데이비슨 (키움)", "박건우 (NC)", "한동희 (롯데)", "허인서 (한화)", "오지환 (LG)", "문보경 (LG)", "박동원 (LG)", "안현민 (KT)", "전병우 (삼성)", "김형준 (NC)", "박찬혁 (키움)", "강민호 (삼성)", "전의산 (SSG)", "문정빈 (LG)", "김웅빈 (키움)", "히우라 (키움)", "윤동희 (롯데)", "최정 (SSG)", "이재현 (삼성)", "임병욱 (키움)", "강승호 (두산)", "오태곤 (SSG)", "장성우 (KT)", "블레인 (NC)", "고명준 (SSG)", "김영웅 (삼성)", "윤준호 (두산)", "채은성 (한화)", "이형종 (키움)", "여동욱 (키움)", "박주홍 (키움)", "양석환 (두산)", "세베리노 (두산)", "장준원 (KT)", "이주헌 (LG)", "박정현 (한화)", "신재인 (NC)", "이재원 (LG)", "박상준 (KIA)", "김도환 (삼성)", "아데를린 (KIA)", "한지윤 (한화)", "이진영 (한화)"]}, "준족형": {"x": [0.008, 0.0082, 0.0085, 0.0305, 0.0125, 0.0018, 0.0019, 0.0131, 0.0094, 0.0, 0.0096, 0.0, 0.0, 0.0122, 0.002, 0.0, 0.0198, 0.0067, 0.0157, 0.0024, 0.0, 0.0341, 0.0082, 0.0, 0.0168, 0.0101, 0.0069, 0.0, 0.0116, 0.0, 0.0121, 0.0041, 0.0, 0.0, 0.0229, 0.0046, 0.0048, 0.0145, 0.0146, 0.0057, 0.0, 0.0, 0.0, 0.0126, 0.0, 0.0064, 0.0, 0.014, 0.0282, 0.0214, 0.0072, 0.0074, 0.0074, 0.0, 0.0169, 0.0085, 0.0], "y": [0.008, 0.0544, 0.0711, 0.0508, 0.0891, 0.0346, 0.0056, 0.0373, 0.0546, 0.0415, 0.0058, 0.0058, 0.1087, 0.0385, 0.002, 0.0262, 0.0, 0.0067, 0.0515, 0.0024, 0.0179, 0.021, 0.0, 0.0, 0.0034, 0.0, 0.0172, 0.0687, 0.0, 0.0977, 0.0324, 0.0082, 0.0848, 0.0183, 0.0, 0.0323, 0.0429, 0.0048, 0.0243, 0.0, 0.0359, 0.0, 0.0062, 0.0126, 0.0191, 0.0127, 0.0196, 0.014, 0.0211, 0.0071, 0.0216, 0.0074, 0.0296, 0.0, 0.0085, 0.0171, 0.028], "t": ["박성한 (SSG)", "박찬호 (두산)", "박해민 (LG)", "김주원 (NC)", "박민우 (NC)", "정준재 (SSG)", "김선빈 (KIA)", "정수빈 (두산)", "류지혁 (삼성)", "김지찬 (삼성)", "김민석 (두산)", "홍창기 (LG)", "황성빈 (롯데)", "김성윤 (삼성)", "김상수 (KT)", "신민재 (LG)", "안치홍 (키움)", "서건창 (키움)", "심우준 (한화)", "김민혁 (KT)", "구본혁 (LG)", "박승규 (삼성)", "한승택 (KT)", "권혁빈 (키움)", "권희동 (NC)", "최주환 (키움)", "박지훈 (두산)", "장두성 (롯데)", "전준우 (롯데)", "최정원 (NC)", "안상현 (SSG)", "문성주 (LG)", "조수행 (두산)", "김규성 (KIA)", "최인호 (한화)", "이원석 (한화)", "한태양 (롯데)", "한유섬 (SSG)", "박민 (KIA)", "손아섭 (두산)", "오재원 (한화)", "이강민 (KT)", "브룩스 (키움)", "서호철 (NC)", "박정우 (KIA)", "황영묵 (한화)", "김한별 (NC)", "한석현 (NC)", "김성욱 (SSG)", "김대한 (두산)", "이지영 (SSG)", "데일 (KIA)", "이유찬 (두산)", "최재훈 (한화)", "김헌곤 (삼성)", "양우현 (삼성)", "류승민 (두산)"]}, "교타형": {"x": [0.0133, 0.0283, 0.0416, 0.0225, 0.0255, 0.0224, 0.0225, 0.0342, 0.0173, 0.0302, 0.0362, 0.0325, 0.0288, 0.0244, 0.0157, 0.0183, 0.0369, 0.0487, 0.0387, 0.0195, 0.005, 0.0101, 0.0179, 0.0208, 0.0211, 0.0399, 0.024, 0.0124, 0.0287, 0.0115, 0.008, 0.0241, 0.0161, 0.0042, 0.0221, 0.0047, 0.0219, 0.0172, 0.0185, 0.0065, 0.0214, 0.0, 0.0234, 0.0177, 0.0194], "y": [0.0414, 0.0016, 0.0032, 0.0, 0.0187, 0.0293, 0.0363, 0.0378, 0.025, 0.0121, 0.004, 0.0, 0.0066, 0.0111, 0.009, 0.0023, 0.0046, 0.0023, 0.0073, 0.0, 0.0075, 0.0025, 0.0, 0.0, 0.0, 0.0171, 0.024, 0.0031, 0.0287, 0.0115, 0.0199, 0.0, 0.0, 0.0126, 0.0, 0.0, 0.0109, 0.0057, 0.0, 0.0065, 0.0143, 0.0233, 0.0, 0.0, 0.0388], "t": ["최원준 (KT)", "레이예스 (롯데)", "디아즈 (삼성)", "김현수 (KT)", "문현빈 (한화)", "김호령 (KIA)", "최지훈 (SSG)", "박재현 (KIA)", "전민재 (롯데)", "구자욱 (삼성)", "에레디아 (SSG)", "고승민 (롯데)", "김태연 (한화)", "안재석 (두산)", "이우성 (NC)", "나승엽 (롯데)", "송찬의 (LG)", "카스트로 (KIA)", "박준순 (두산)", "김건희 (키움)", "이도윤 (한화)", "허경민 (KT)", "한준수 (KIA)", "손성빈 (롯데)", "조형우 (SSG)", "김휘집 (NC)", "천재환 (NC)", "추재현 (키움)", "카메론 (두산)", "권동진 (KT)", "천성호 (LG)", "김태군 (KIA)", "하주석 (KIA)", "류현인 (KT)", "노진혁 (롯데)", "오윤석 (KT)", "손호영 (롯데)", "안중열 (NC)", "오명진 (두산)", "박승욱 (롯데)", "박시원 (NC)", "배정대 (KT)", "유강남 (롯데)", "김동헌 (키움)", "이주형 (키움)"]}};
+  const 색 = { "준족형": "#2b7fd6", "거포형": "#d64545", "교타형": "#2a9d5c" };
+  const drawn = {};
+  const pfont = { family: '"Apple SD Gothic Neo", "Noto Sans KR", sans-serif', size: 15, color: '#1c2230' };
+  function base(xt, yt) {
+    return { autosize: true, margin: { l: 70, r: 20, t: 36, b: 60 }, paper_bgcolor: '#f7f3e8', plot_bgcolor: '#f7f3e8',
+      font: pfont, xaxis: { title: { text: xt }, gridcolor: '#ddd6c6' },
+      yaxis: { title: { text: yt }, gridcolor: '#ddd6c6' } };
+  }
+  function draw(id) {
+    if (drawn[id] || !window.Plotly) return;
+    drawn[id] = true;
+    if (id === 'g2') {
+      const lay = base('타석', '선수 수(명)');
+      lay.title = { text: '타석 분포 (364명), 점선은 기준 100', font: { size: 17 } };
+      lay.bargap = 0.05;
+      lay.shapes = [{ type: 'line', x0: 100, x1: 100, yref: 'paper', y0: 0, y1: 1, line: { color: '#d64545', width: 2, dash: 'dash' } }];
+      Plotly.newPlot('g2', [{ type: 'histogram', x: PA, xbins: { start: 0, end: 700, size: 25 },
+        marker: { color: '#2b7fd6' } }], lay, { staticPlot: true, responsive: true });
+    }
+    if (id === 'g9') {
+      const lay = base('홈런율 (홈런 ÷ 타석)', '도루율 (도루 ÷ 타석)');
+      lay.title = { text: '표준화 후 k=3 (155명)', font: { size: 17 }, x: 0.04, xanchor: 'left' };
+      lay.legend = { orientation: 'h', x: 1, xanchor: 'right', y: 1.02, yanchor: 'bottom' };
+      const traces = ['준족형', '거포형', '교타형'].map(n => ({ x: 점[n].x, y: 점[n].y, name: n, mode: 'markers', type: 'scatter',
+        marker: { color: 색[n], size: 8, opacity: .8 } }));
+      Plotly.newPlot('g9', traces, lay, { staticPlot: true, responsive: true });
+    }
+  }
   function show(i) {
     cur = Math.max(0, Math.min(slides.length - 1, i));
     slides.forEach((s, k) => s.classList.toggle('on', k === cur));
     [...dots.children].forEach((d, k) => d.classList.toggle('here', k === cur));
     document.getElementById('pageno').textContent = (cur + 1) + ' / ' + slides.length;
-    if (slides[cur].querySelector('#scatter')) 그리기();
+    slides[cur].querySelectorAll('.chart').forEach(c => draw(c.id));
   }
   addEventListener('keydown', e => {
+    if (e.target.matches('input, select, textarea, button')) return;
     if (['ArrowRight', ' ', 'PageDown'].includes(e.key)) show(cur + 1);
     if (['ArrowLeft', 'PageUp'].includes(e.key)) show(cur - 1);
     if (e.key === 'Home') show(0);
   });
-  addEventListener('click', e => { if (e.target.closest('a, #scatter')) return; show(cur + (e.clientX > innerWidth / 2 ? 1 : -1)); });
+  addEventListener('click', e => { if (e.target.closest('a')) return; show(cur + (e.clientX > innerWidth / 2 ? 1 : -1)); });
   show(0);
 </script>
 </body>

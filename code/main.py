@@ -1,9 +1,12 @@
 # main.py · KBO 타자는 정말 '거포형·준족형·교타형' 세 유형으로 나뉘는가
 # 실행: 저장소 맨 위 폴더에서 streamlit run code/main.py
+from itertools import permutations
+
 import pandas as pd
 import plotly.express as px
 import streamlit as st
-from sklearn.cluster import KMeans
+from sklearn.cluster import DBSCAN, AgglomerativeClustering, KMeans
+from sklearn.mixture import GaussianMixture
 from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import StandardScaler
 
@@ -149,6 +152,35 @@ with 탭4:
         c.markdown(f"**{n}** ({int((번호 == i).sum())}명)")
         c.dataframe(대상[대상["군집번호"] == i].sort_values("타석", ascending=False)[["선수명", "팀", "타석"]],
                     width="stretch", hide_index=True, height=300)
+
+    st.subheader(f"후보 모델 비교 · 같은 {len(대상)}명, 같은 표준화 다섯 비율, 묶음 {k}개")
+    # DBSCAN은 묶음 수를 정하지 않는다. 반경 1.5는 각 선수의 10번째 이웃까지 거리 중앙값(1.47)을 보고 정했다
+    후보모델 = {
+        f"K-평균(k={k})": 번호,
+        f"계층적 군집(응집, ward, {k}묶음)": AgglomerativeClustering(n_clusters=k, linkage="ward").fit_predict(Xs),
+        "DBSCAN(반경 1.5, 최소 이웃 10)": DBSCAN(eps=1.5, min_samples=10).fit_predict(Xs),
+        f"가우시안 혼합({k}개)": GaussianMixture(n_components=k, random_state=0).fit_predict(Xs),
+    }
+    비교행 = []
+    for 모델이름, 번호c in 후보모델.items():
+        번호c = pd.Series(번호c)
+        남김 = (번호c != -1).to_numpy()
+        묶음들 = sorted(번호c[남김].unique())
+        실루엣c = f"{silhouette_score(Xs[남김], 번호c[남김]):.3f}" if len(묶음들) >= 2 else "계산 불가(묶음 1개)"
+        if len(묶음들) == k:
+            표c = pd.crosstab(pd.Series(번호), 번호c)
+            최대 = max(sum(int(표c.loc[r, c]) for r, c in zip(표c.index, 짝)) for 짝 in permutations(묶음들))
+            겹침 = f"{최대}/{len(대상)} = {최대 / len(대상):.2f}"
+        else:
+            겹침 = f"비교 불가(묶음 {len(묶음들)}개)"
+        비교행.append({"모델": 모델이름, "실루엣": 실루엣c,
+                    "묶음 크기(큰 순)": " · ".join(str(v) for v in sorted(번호c[남김].value_counts().tolist(), reverse=True)),
+                    "잡음(어느 묶음에도 안 듦)": int((~남김).sum()),
+                    "K-평균 묶음과 겹치는 비율": 겹침})
+    st.dataframe(pd.DataFrame(비교행), width="stretch", hide_index=True)
+    st.caption("겹치는 비율은 두 방법의 묶음을 하나씩 짝지었을 때 같은 묶음에 든 선수가 가장 많은 경우의 인원을 전체 인원으로 나눈 값입니다. "
+               "우리 팀의 최종 선택은 K-평균입니다. 수업에서 배운 방법이고, 묶음 평균으로 유형 이름을 붙이기 쉽고, "
+               "실루엣도 네 방법 가운데 가장 높습니다. 최소 타석 100, k=3일 때 README의 표와 같은 값이 나옵니다.")
 
 with 탭5:
     st.subheader("우리 팀의 해석 (최소 타석 100, k=3 기준)")

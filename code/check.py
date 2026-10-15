@@ -1,8 +1,12 @@
 # check.py · 앱(main.py)과 같은 계산을 터미널에서 돌려 README에 적은 수치를 모두 출력한다
 # 실행: 저장소 맨 위 폴더에서 python3 code/check.py
 import pandas as pd
-from sklearn.cluster import KMeans
+from itertools import permutations
+
+from sklearn.cluster import DBSCAN, AgglomerativeClustering, KMeans
+from sklearn.mixture import GaussianMixture
 from sklearn.metrics import silhouette_score
+from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
 
 데이터경로 = "data/kbo_hitters_2026_full.csv"
@@ -132,3 +136,43 @@ print(f"실루엣 {silhouette_score(X7, 번호7):.3f}")
 print(d7.assign(군집=번호7).groupby("군집")[열7].mean().assign(크기=pd.Series(번호7).value_counts()).round(3).to_string())
 print("우리 결과(다섯 비율)의 유형별 평균 OPS:",
       {이름[i]: round(float(d7.loc[d7["군집"] == i, "OPS"].mean()), 3) for i in 평균.index})
+
+print("\n== 8. 후보 모델 비교 (같은 155명 · 같은 표준화 다섯 비율 · 묶음 3개)")
+# 비교 기준: 실루엣, 묶음 크기, K-평균 세 유형과 겹치는 비율
+# 겹치는 비율: 후보의 묶음 번호를 K-평균 유형에 하나씩 짝지어 같은 유형에 든 선수가 가장 많아지는 짝을 찾고, 그 인원 ÷ 155
+DBSCAN_최소이웃 = 10   # 변수 5개 × 2
+DBSCAN_반경 = 1.5      # 각 선수의 10번째 이웃까지 거리의 중앙값(아래 출력)을 반올림
+거리, _ = NearestNeighbors(n_neighbors=DBSCAN_최소이웃).fit(Xs).kneighbors(Xs)
+# 이웃 거리는 DBSCAN의 최소 이웃 계산과 같게 자기 자신을 첫째 이웃으로 센다
+print(f"DBSCAN 반경 근거: {DBSCAN_최소이웃}번째 이웃까지 거리 중앙값 {pd.Series(거리[:, -1]).median():.2f}")
+print("(AI가 처음 정한 반경 0.5일 때 잡음 수:", int((DBSCAN(eps=0.5, min_samples=DBSCAN_최소이웃).fit_predict(Xs) == -1).sum()), "명)")
+후보 = {
+    "K-평균(k=3)": KMeans(n_clusters=3, n_init=10, random_state=0).fit_predict(Xs),
+    "계층적 군집(응집, ward, 3묶음)": AgglomerativeClustering(n_clusters=3, linkage="ward").fit_predict(Xs),
+    f"DBSCAN(반경 {DBSCAN_반경}, 최소 이웃 {DBSCAN_최소이웃})": DBSCAN(eps=DBSCAN_반경, min_samples=DBSCAN_최소이웃).fit_predict(Xs),
+    "가우시안 혼합(3개)": GaussianMixture(n_components=3, random_state=0).fit_predict(Xs),
+}
+유형 = d["군집"].map(이름)
+유형목록 = ["준족형", "거포형", "교타형"]
+for 모델이름, 번호8 in 후보.items():
+    번호8 = pd.Series(번호8)
+    잡음 = int((번호8 == -1).sum())
+    묶음 = sorted(번호8[번호8 != -1].unique())
+    크기 = sorted(번호8[번호8 != -1].value_counts().tolist(), reverse=True)
+    if len(묶음) >= 2:
+        남김 = (번호8 != -1).to_numpy()
+        실루엣 = f"{silhouette_score(Xs[남김], 번호8[남김]):.3f}"
+    else:
+        실루엣 = "계산 불가(묶음 1개)"
+    표8 = pd.crosstab(유형, 번호8).reindex(index=유형목록, fill_value=0)
+    if len(묶음) == 3:
+        최대 = max(sum(int(표8.iloc[r][c]) for r, c in enumerate(짝)) for 짝 in permutations(묶음))
+        겹침 = f"{최대}/{len(d)} = {최대 / len(d):.2f}"
+    else:
+        겹침 = f"비교 불가(묶음 {len(묶음)}개)"
+    print(f"{모델이름}: 실루엣 {실루엣} · 묶음 크기(큰 순) {크기} · 잡음 {잡음}명 · K-평균 유형과 겹치는 비율 {겹침}")
+    print("   " + 표8.to_string().replace("\n", "\n   "))
+    평균8 = d.assign(묶음=번호8).groupby("묶음")[비율열].mean()
+    평균8["인원"] = 번호8.value_counts()
+    print("   묶음별 평균(-1은 잡음):")
+    print("   " + 평균8.round(3).to_string().replace("\n", "\n   "))
