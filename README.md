@@ -151,7 +151,7 @@ K-평균만 돌려 보고 끝내지 않고, 같은 조건에서 군집 방법 �
 - 10103 이철수: AI 제안을 말로만 거절하지 않고 직접 돌려 보고 거절하니 이유를 말하기 쉬웠다. DBSCAN이 거의 한 덩어리로 본 걸 보고 경계가 흐릿하다는 우리 해석이 더 믿어졌다.
 
 ## 생성형 AI 활용 명시
-- 사용한 AI: 생성형 AI 도구(대화형 AI)
+- 사용한 AI 모델: Claude Fable 5.1(Anthropic). 이 샘플은 선생님이 이 모델로 만들었습니다. 실제 팀은 사용한 모델 이름과 버전(예: ChatGPT GPT-5, Gemini 2.5, Claude 등)을 그대로 적습니다.
 - 사용한 곳: 분석 코드(`code/main.py`·`code/check.py`) 초안 작성, 우리 해석에 대한 반론 요청, README 문구의 맞춤법 점검
 - 사용하지 않은 곳: 주제 선정 이유, 최소 타석 기준과 k의 결정, 결과 해석, 결론
 - 검증 방법: 모든 수치를 `python3 code/check.py`로 다시 계산해 README와 대조했습니다. AI 제안을 받아들이거나 거절한 기록(타율·OPS 추가 제안 거절, 반론 세 가지 처리)은 `log/10.md`·`log/11.md`에 있습니다.
@@ -160,7 +160,7 @@ K-평균만 돌려 보고 끝내지 않고, 같은 조건에서 군집 방법 �
 1. KBO 공식 기록실(한국야구위원회), 2026 정규시즌 타자 기록 및 선수 등록 명단, https://www.koreabaseball.com/Record/ , 2026-10-15 접근. 비상업 교육 목적 사용, 이용 약관 확인 필요.
 2. KBO 선수 검색(한국야구위원회), 2026 등록 선수 명단(포지션·생년월일·키·몸무게), https://www.koreabaseball.com/Player/Search.aspx , 2026-10-15 접근. 수업용 사본: github.com/greatsong/modudata `kbo_player_profiles_2026.csv`
 3. 수집 방법: 2026-10-15에 KBO 기록실의 타자 기본 기록 1·2 화면과 주루 기록 화면을 10개 팀별로 모아 선수명·팀으로 합쳤습니다(364명 · 25열). 선수 정보는 선수명·팀으로 붙였고 11명은 짝을 찾지 못해 빈칸입니다.
-4. 사용한 소프트웨어: Python 3.11, pandas 2.3.3, numpy 1.26.4, scikit-learn 1.8.0, plotly 6.6.0, Streamlit 1.53.1, stlite 1.4.0
+4. 사용한 소프트웨어: Python 3.11, pandas 2.3.3, numpy 1.26.4, scikit-learn 1.8.0, plotly 6.6.0, Streamlit 1.53.1, stlite 1.4.0 · 생성형 AI: Claude Fable 5.1(Anthropic)
 5. 『데이터 과학』, 2022 개정 교육과정 고등학교 교과서
 
 ## 실행 방법
