@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>기록실 3인방 · KBO 타자 유형 발표</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #0f1219; --bg-accent: #161b26;
+    --ink: #f2f4f8; --ink-dim: #8b93a7;
+    --accent: #ffd166; --accent2: #7cc7ff; --quote: #e8ecf4;
+  }
+  html, body { height: 100%; }
+  body { background: var(--bg); color: var(--ink);
+    font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif; overflow: hidden; }
+  .slide { position: absolute; inset: 0; display: none; flex-direction: column;
+    justify-content: center; padding: 6vh 9vw; line-height: 1.55; }
+  .slide.on { display: flex; }
+  .kicker { font-size: clamp(15px, 1.6vw, 22px); letter-spacing: .14em;
+    color: var(--accent); font-weight: 700; margin-bottom: 2.2vh; }
+  .kicker.blue { color: var(--accent2); }
+  h1 { font-size: clamp(34px, 4.6vw, 64px); font-weight: 800; line-height: 1.25; }
+  h2 { font-size: clamp(26px, 3.4vw, 48px); font-weight: 800; line-height: 1.35; }
+  .sub { margin-top: 3vh; font-size: clamp(17px, 1.9vw, 26px); color: var(--ink-dim); }
+  blockquote { font-size: clamp(21px, 2.6vw, 38px); font-weight: 700; color: var(--quote);
+    line-height: 1.5; max-width: 28em; }
+  blockquote::before { content: "\201C"; color: var(--accent); }
+  blockquote::after { content: "\201D"; color: var(--accent); }
+  .facts { margin-top: 1vh; }
+  .facts li { list-style: none; font-size: clamp(19px, 2.3vw, 33px); margin: 2.4vh 0;
+    padding-left: 1.2em; text-indent: -1.2em; }
+  .facts li::before { content: "\00B7  "; color: var(--accent2); font-weight: 800; }
+  .facts b { color: var(--accent2); font-weight: 800; }
+  .point { margin-top: 3.4vh; font-size: clamp(20px, 2.5vw, 36px); font-weight: 700; }
+  .point b { color: var(--accent); }
+  .small { margin-top: 2.6vh; font-size: clamp(15px, 1.6vw, 22px); color: var(--ink-dim); }
+  .prompt { margin-top: 3vh; background: #101d1a; border: 1px solid #24463d; border-radius: 14px;
+    padding: 2.6vh 2vw; font-family: "SFMono-Regular", "D2Coding", Menlo, monospace;
+    font-size: clamp(14px, 1.55vw, 22px); line-height: 1.7; color: #d7f0ea; max-width: 40em; overflow-wrap: break-word; }
+  table.mini { margin-top: 3vh; border-collapse: collapse; font-size: clamp(16px, 1.9vw, 27px); }
+  table.mini th, table.mini td { padding: 1.2vh 1.4vw; border-bottom: 1px solid #2a3244; text-align: left; }
+  table.mini th { color: var(--accent); font-weight: 800; }
+  table.mini td:first-child { font-weight: 800; white-space: nowrap; }
+  table.mini td em { color: var(--accent2); font-style: normal; font-weight: 800; }
+  .split { margin-top: 3.4vh; display: flex; gap: 3vw; flex-wrap: wrap; }
+  .card { border: 1.5px solid #2a3244; border-radius: 16px; padding: 2.4vh 2vw; min-width: 15em; }
+  .card .t { color: var(--accent); font-weight: 800; font-size: clamp(16px, 1.8vw, 24px); }
+  .card .v { margin-top: 1.2vh; font-size: clamp(30px, 4vw, 58px); font-weight: 800; }
+  .card .d { margin-top: 1vh; color: var(--ink-dim); font-size: clamp(14px, 1.5vw, 20px); }
+  .withimg { display: flex; gap: 3vw; align-items: center; margin-top: 2vh; }
+  .withimg .txt { flex: 1 1 0; min-width: 0; }
+  .withimg img { max-height: 58vh; max-width: 32vw; border-radius: 14px; border: 1px solid #2a3244; object-fit: cover; }
+  .shot.tall img { max-height: 64vh; width: auto; margin: 0 auto; display: block; }
+  .shot.wide img { max-height: 46vh; width: auto; max-width: 100%; margin: 0 auto; display: block; }
+  .src { margin-top: 1.4vh; font-size: clamp(12px, 1.2vw, 16px); color: var(--ink-dim); }
+  .diagram { margin-top: 3vh; background: #f7f3e8; border-radius: 16px; padding: 2vh 1.4vw; overflow-x: auto; }
+  .diagram.short svg { max-height: var(--dh, 40vh); }
+  /* 인터랙티브 위젯: 밝은 상자 안 */
+  .widget { color: #1c2230; }
+  .diagram .widget svg { width: auto; max-width: 100%; max-height: var(--wh, 44vh); height: auto; display: block; margin: 0 auto; }
+  .wctl { display: flex; flex-wrap: wrap; align-items: center; gap: .8vh 1.4vw; margin-top: 1.2vh;
+          font-size: clamp(14px, 1.5vw, 20px); font-weight: 700; }
+  .wctl label { display: flex; align-items: center; gap: .6vw; white-space: nowrap; }
+  .wctl input[type=range] { width: clamp(120px, 16vw, 260px); accent-color: #2b7fd6; }
+  .wbtn { border: 1.5px solid #c9c2b2; background: #fff; color: #1c2230; border-radius: 999px;
+          padding: .5vh 1.2vw; font: inherit; font-weight: 700; cursor: pointer; }
+  .wbtn.on { background: #2b7fd6; border-color: #2b7fd6; color: #fff; }
+  .wout { margin-left: auto; color: #b07a00; font-variant-numeric: tabular-nums; }
+  .diagram svg { width: auto; max-width: 100%; max-height: 50vh; height: auto; display: block; margin: 0 auto; }
+  .chapter { background: radial-gradient(ellipse at 20% 110%, #1c2434 0%, var(--bg) 60%); }
+  .foot span { white-space: nowrap; }
+  .foot { position: absolute; bottom: 3.4vh; left: 9vw; right: 9vw;
+    display: flex; justify-content: space-between; align-items: center;
+    color: var(--ink-dim); font-size: clamp(12px, 1.2vw, 16px); }
+  .dots { display: flex; gap: 6px; }
+  .dots i { width: 7px; height: 7px; border-radius: 50%; background: #333c4e; }
+  .dots i.here { background: var(--accent); }
+  .hint { position: absolute; top: 3.2vh; right: 4vw; color: var(--ink-dim);
+    font-size: clamp(11px, 1.1vw, 14px); }
+@media (max-width: 760px) { .dots { display: none; } }
+</style>
+
+</head>
+<body>
+
+<section class="slide cover chapter">
+  <div class="kicker">1 / 9 · 제목</div>
+  <h1>KBO 타자는 정말<br>'거포형·준족형·교타형'<br>세 유형으로 나뉘는가</h1>
+  <p class="sub">기록실 3인방 · 10101 홍길동 · 10102 김영희 · 10103 이철수</p>
+  <p class="small">선생님이 만든 가상 팀의 샘플 · 수치는 code/check.py 실제 계산값</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">2 / 9 · 왜 이 주제인가</div>
+  <h2>중계에서 듣는 세 표현, 기록에도 있을까</h2>
+  <ul class="facts">
+    <li>야구 중계에서 자주 듣는 표현: <b>"거포"</b>, <b>"준족"</b>, <b>"교타자"</b></li>
+    <li>기록에서 나온 말인지, 해설자의 인상에서 나온 말인지 확인한 적 없음</li>
+    <li>9차시 축구 선수 묶기를 2026 시즌 야구 타자에 적용</li>
+  </ul>
+  <p class="point">선수 이름은 빼고 <b>기록만으로</b> 묶어도 세 유형이 나오는지 확인</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">3 / 9 · 데이터</div>
+  <h2>2026 KBO 정규 시즌 타자 기록</h2>
+  <table class="mini">
+    <tr><th>항목</th><th>내용</th></tr>
+    <tr><td>출처</td><td>KBO 공식 기록실 타자 기본 1·2, 주루 화면 (2026-10-15 수집)</td></tr>
+    <tr><td>크기</td><td><em>364행</em>(선수 1명이 1행) × <em>25열</em></td></tr>
+    <tr><td>사용한 열</td><td>타석 · 홈런 · 도루 · 볼넷 · 삼진 · 2루타</td></tr>
+    <tr><td>만든 변수</td><td>타석당 비율 5개: 홈런율 · 도루율 · 볼넷율 · 삼진율 · 2루타율</td></tr>
+    <tr><td>개인 정보</td><td>없음 (프로 선수의 공개 경기 기록)</td></tr>
+  </table>
+</section>
+
+<section class="slide">
+  <div class="kicker">4 / 9 · 데이터의 구멍과 전처리 판단</div>
+  <h2>타석이 적은 선수는 비율이 크게 튐</h2>
+  <div class="split" style="margin-top:2.4vh">
+    <div class="card"><div class="t">타석 0</div><div class="v">73명</div><div class="d">비율 계산 불가</div></div>
+    <div class="card"><div class="t">타석 중앙값</div><div class="v">57</div><div class="d">타석 10 미만 118명</div></div>
+    <div class="card"><div class="t">홈런율 1위</div><div class="v">0.143</div><div class="d">타석 7인 선수</div></div>
+  </div>
+  <ul class="facts" style="margin-top:1.4vh">
+    <li>개수 대신 <b>타석당 비율</b>: 타석 수가 다른 선수를 같은 기준으로 비교</li>
+    <li><b>타석 100 이상 155명</b>만 사용 (50이면 196명, 200이면 111명)</li>
+    <li>키·몸무게·생년월일·포지션 빈칸 11명: 쓰지 않는 열이라 영향 없음</li>
+  </ul>
+</section>
+
+<section class="slide">
+  <div class="kicker">5 / 9 · 방법과 기준선</div>
+  <h2>K-평균 군집 · 기준선 두 가지</h2>
+  <div class="split" style="margin-top:2vh;align-items:flex-start">
+    <div>
+      <div class="small" style="margin-top:0">① k 후보 비교 (표준화 후)</div>
+      <table class="mini" style="margin-top:1vh">
+        <tr><th>k</th><th>실루엣</th><th>군집 내 제곱합</th></tr>
+        <tr><td>2</td><td>0.197</td><td>608.5</td></tr>
+        <tr><td>3</td><td><em>0.182</em></td><td>515.9</td></tr>
+        <tr><td>4</td><td>0.189</td><td>441.9</td></tr>
+        <tr><td>5</td><td>0.204</td><td>378.3</td></tr>
+        <tr><td>6</td><td>0.202</td><td>342.7</td></tr>
+      </table>
+    </div>
+    <div style="flex:1;min-width:0">
+      <div class="small" style="margin-top:0">② 표준화 전후 비교 (k=3)</div>
+      <div class="card" style="margin-top:1vh"><div class="t">표준화 없이</div><div class="v" style="font-size:clamp(24px,3vw,42px);margin-top:.6vh">0.278</div><div class="d">삼진율 0.139 · 0.208 · 0.284의 세 단계로만 갈림<br>삼진율의 표준편차 0.062가 가장 큼</div></div>
+      <div class="card" style="margin-top:1.6vh"><div class="t">표준화 후 (채택)</div><div class="v" style="font-size:clamp(24px,3vw,42px);margin-top:.6vh">0.182</div><div class="d">다섯 비율이 고르게 반영 · 묶음 크기 45 · 53 · 57</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="kicker">6 / 9 · 결과</div>
+  <h2 style="font-size:clamp(22px,2.6vw,36px)">표준화 후 k=3 · 실루엣 0.182</h2>
+  <div class="split" style="margin-top:1.6vh;flex-wrap:nowrap;align-items:center">
+    <table class="mini" style="margin-top:0;font-size:clamp(13px,1.45vw,20px)">
+      <tr><th>유형</th><th>인원</th><th>홈런율</th><th>도루율</th><th>볼넷율</th><th>삼진율</th><th>2루타율</th></tr>
+      <tr><td>준족형</td><td>57</td><td>0.008</td><td><em>0.025</em></td><td>0.095</td><td><em>0.167</em></td><td>0.030</td></tr>
+      <tr><td>거포형</td><td>53</td><td><em>0.041</em></td><td>0.006</td><td>0.101</td><td>0.247</td><td>0.037</td></tr>
+      <tr><td>교타형</td><td>45</td><td>0.022</td><td>0.011</td><td><em>0.077</em></td><td>0.186</td><td><em>0.053</em></td></tr>
+      <tr><td>전체 평균</td><td>155</td><td>0.023</td><td>0.014</td><td>0.092</td><td>0.200</td><td>0.039</td></tr>
+    </table>
+    <div id="scatter" style="flex:1;min-width:0;height:46vh;background:#f7f3e8;border-radius:14px"></div>
+  </div>
+  <p class="small" style="margin-top:1.4vh">유형 이름은 평균표를 보고 팀이 붙인 해석 · 그래프는 다섯 비율 가운데 두 개만 표시</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">7 / 9 · 해석</div>
+  <h2>세 유형과 비슷한 경향, 경계는 흐릿함</h2>
+  <ul class="facts" style="margin-top:0">
+    <li>실루엣: 자기 묶음과 얼마나 가깝고 옆 묶음과 얼마나 먼지 비교한 값 · <b>0.182</b>는 많은 선수가 경계 근처에 있다는 뜻</li>
+    <li>k=3은 다섯 후보 가운데 최저점 (k=5 0.204, k=2 0.197) · <b>"세 유형"은 우리가 고른 k</b></li>
+    <li>AI 반론 "k=3은 자의적": 받아들여 k 후보 표를 README에 추가</li>
+    <li>AI 반론 "실루엣이 낮아 의미 없음": 뚜렷이 나뉘지 않는다는 것 자체가 질문의 답</li>
+    <li>타율·OPS 추가 제안 거절: 넣으면 OPS 0.841·0.704·0.645로 갈려 실력으로 묶임</li>
+  </ul>
+</section>
+
+<section class="slide">
+  <div class="kicker">8 / 9 · 한계</div>
+  <h2>이 결과를 믿기 어려운 이유</h2>
+  <ul class="facts">
+    <li>2026년 한 시즌 기록만 사용</li>
+    <li>최소 타석 100은 팀이 정한 기준 · 50으로 낮추면 준족형이 <b>11명</b>으로 줄고 115명 묶음은 특징이 없어짐</li>
+    <li>유형 이름은 군집 평균을 보고 팀이 붙인 해석 · 준족형은 도루율 0.025로 가장 약한 이름</li>
+  </ul>
+  <p class="point">이 묶음으로 <b>선수 가치를 매기면 안 됨</b> · 묶음은 치는 방식이지 실력이 아님</p>
+</section>
+
+<section class="slide chapter">
+  <div class="kicker">9 / 9 · 질문 받겠습니다</div>
+  <h1>질문 받겠습니다</h1>
+  <p class="sub">앱: index.html · 수치 확인: code/check.py · 기록: log/01.md ~ 12.md</p>
+  <ul class="facts" style="margin-top:4vh">
+    <li style="font-size:clamp(14px,1.5vw,20px);margin:1vh 0">이 그래프(또는 숫자)는 무엇을 뜻합니까</li>
+    <li style="font-size:clamp(14px,1.5vw,20px);margin:1vh 0">아무 모델도 쓰지 않았을 때(기준선)보다 얼마나 나아졌습니까</li>
+    <li style="font-size:clamp(14px,1.5vw,20px);margin:1vh 0">이 결과를 믿을 수 없는 이유를 하나 말해 보십시오</li>
+    <li style="font-size:clamp(14px,1.5vw,20px);margin:1vh 0">여러분 팀은 이 결과에서 무엇을 새로 알게 되었습니까</li>
+    <li style="font-size:clamp(14px,1.5vw,20px);margin:1vh 0">주제를 왜 이것으로 정했습니까</li>
+  </ul>
+</section>
+
+<div class="hint">← → 이동 · Home 처음으로</div>
+<div class="foot">
+  <span>기록실 3인방 · 데이터 과학 팀 프로젝트</span>
+  <div class="dots" id="dots"></div>
+  <span id="pageno"></span>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script>
+  const 점 = {"거포형": {"x": [0.0641, 0.0689, 0.0759, 0.0534, 0.0314, 0.0508, 0.0596, 0.0358, 0.0428, 0.0455, 0.0535, 0.04, 0.0542, 0.0435, 0.031, 0.0234, 0.0333, 0.0336, 0.0293, 0.0417, 0.0337, 0.0378, 0.0392, 0.0576, 0.0279, 0.0415, 0.0162, 0.0656, 0.0559, 0.0381, 0.032, 0.0335, 0.0446, 0.0379, 0.0517, 0.0246, 0.0203, 0.0312, 0.0265, 0.0267, 0.0108, 0.0331, 0.0398, 0.0422, 0.026, 0.0719, 0.0205, 0.0629, 0.0282, 0.0227, 0.0769, 0.0504, 0.0196], "y": [0.0078, 0.0156, 0.0185, 0.0, 0.0035, 0.0053, 0.0, 0.0179, 0.0037, 0.0038, 0.0019, 0.018, 0.0022, 0.0, 0.0088, 0.0, 0.0024, 0.012, 0.0073, 0.0, 0.0, 0.0, 0.003, 0.0, 0.0031, 0.0064, 0.0, 0.0098, 0.0033, 0.0138, 0.0285, 0.0297, 0.0037, 0.0, 0.0043, 0.0, 0.0051, 0.0052, 0.0106, 0.0, 0.0161, 0.0, 0.0, 0.0, 0.0, 0.0065, 0.0068, 0.0, 0.0, 0.0, 0.0, 0.0084, 0.0196], "t": ["오스틴 (LG)", "힐리어드 (KT)", "김도영 (KIA)", "나성범 (KIA)", "최형우 (삼성)", "노시환 (한화)", "강백호 (한화)", "페라자 (한화)", "양의지 (두산)", "김재환 (SSG)", "데이비슨 (키움)", "박건우 (NC)", "한동희 (롯데)", "허인서 (한화)", "오지환 (LG)", "문보경 (LG)", "박동원 (LG)", "안현민 (KT)", "전병우 (삼성)", "김형준 (NC)", "박찬혁 (키움)", "강민호 (삼성)", "전의산 (SSG)", "문정빈 (LG)", "김웅빈 (키움)", "히우라 (키움)", "윤동희 (롯데)", "최정 (SSG)", "이재현 (삼성)", "임병욱 (키움)", "강승호 (두산)", "오태곤 (SSG)", "장성우 (KT)", "블레인 (NC)", "고명준 (SSG)", "김영웅 (삼성)", "윤준호 (두산)", "채은성 (한화)", "이형종 (키움)", "여동욱 (키움)", "박주홍 (키움)", "양석환 (두산)", "세베리노 (두산)", "장준원 (KT)", "이주헌 (LG)", "박정현 (한화)", "신재인 (NC)", "이재원 (LG)", "박상준 (KIA)", "김도환 (삼성)", "아데를린 (KIA)", "한지윤 (한화)", "이진영 (한화)"]}, "준족형": {"x": [0.008, 0.0082, 0.0085, 0.0305, 0.0125, 0.0018, 0.0019, 0.0131, 0.0094, 0.0, 0.0096, 0.0, 0.0, 0.0122, 0.002, 0.0, 0.0198, 0.0067, 0.0157, 0.0024, 0.0, 0.0341, 0.0082, 0.0, 0.0168, 0.0101, 0.0069, 0.0, 0.0116, 0.0, 0.0121, 0.0041, 0.0, 0.0, 0.0229, 0.0046, 0.0048, 0.0145, 0.0146, 0.0057, 0.0, 0.0, 0.0, 0.0126, 0.0, 0.0064, 0.0, 0.014, 0.0282, 0.0214, 0.0072, 0.0074, 0.0074, 0.0, 0.0169, 0.0085, 0.0], "y": [0.008, 0.0544, 0.0711, 0.0508, 0.0891, 0.0346, 0.0056, 0.0373, 0.0546, 0.0415, 0.0058, 0.0058, 0.1087, 0.0385, 0.002, 0.0262, 0.0, 0.0067, 0.0515, 0.0024, 0.0179, 0.021, 0.0, 0.0, 0.0034, 0.0, 0.0172, 0.0687, 0.0, 0.0977, 0.0324, 0.0082, 0.0848, 0.0183, 0.0, 0.0323, 0.0429, 0.0048, 0.0243, 0.0, 0.0359, 0.0, 0.0062, 0.0126, 0.0191, 0.0127, 0.0196, 0.014, 0.0211, 0.0071, 0.0216, 0.0074, 0.0296, 0.0, 0.0085, 0.0171, 0.028], "t": ["박성한 (SSG)", "박찬호 (두산)", "박해민 (LG)", "김주원 (NC)", "박민우 (NC)", "정준재 (SSG)", "김선빈 (KIA)", "정수빈 (두산)", "류지혁 (삼성)", "김지찬 (삼성)", "김민석 (두산)", "홍창기 (LG)", "황성빈 (롯데)", "김성윤 (삼성)", "김상수 (KT)", "신민재 (LG)", "안치홍 (키움)", "서건창 (키움)", "심우준 (한화)", "김민혁 (KT)", "구본혁 (LG)", "박승규 (삼성)", "한승택 (KT)", "권혁빈 (키움)", "권희동 (NC)", "최주환 (키움)", "박지훈 (두산)", "장두성 (롯데)", "전준우 (롯데)", "최정원 (NC)", "안상현 (SSG)", "문성주 (LG)", "조수행 (두산)", "김규성 (KIA)", "최인호 (한화)", "이원석 (한화)", "한태양 (롯데)", "한유섬 (SSG)", "박민 (KIA)", "손아섭 (두산)", "오재원 (한화)", "이강민 (KT)", "브룩스 (키움)", "서호철 (NC)", "박정우 (KIA)", "황영묵 (한화)", "김한별 (NC)", "한석현 (NC)", "김성욱 (SSG)", "김대한 (두산)", "이지영 (SSG)", "데일 (KIA)", "이유찬 (두산)", "최재훈 (한화)", "김헌곤 (삼성)", "양우현 (삼성)", "류승민 (두산)"]}, "교타형": {"x": [0.0133, 0.0283, 0.0416, 0.0225, 0.0255, 0.0224, 0.0225, 0.0342, 0.0173, 0.0302, 0.0362, 0.0325, 0.0288, 0.0244, 0.0157, 0.0183, 0.0369, 0.0487, 0.0387, 0.0195, 0.005, 0.0101, 0.0179, 0.0208, 0.0211, 0.0399, 0.024, 0.0124, 0.0287, 0.0115, 0.008, 0.0241, 0.0161, 0.0042, 0.0221, 0.0047, 0.0219, 0.0172, 0.0185, 0.0065, 0.0214, 0.0, 0.0234, 0.0177, 0.0194], "y": [0.0414, 0.0016, 0.0032, 0.0, 0.0187, 0.0293, 0.0363, 0.0378, 0.025, 0.0121, 0.004, 0.0, 0.0066, 0.0111, 0.009, 0.0023, 0.0046, 0.0023, 0.0073, 0.0, 0.0075, 0.0025, 0.0, 0.0, 0.0, 0.0171, 0.024, 0.0031, 0.0287, 0.0115, 0.0199, 0.0, 0.0, 0.0126, 0.0, 0.0, 0.0109, 0.0057, 0.0, 0.0065, 0.0143, 0.0233, 0.0, 0.0, 0.0388], "t": ["최원준 (KT)", "레이예스 (롯데)", "디아즈 (삼성)", "김현수 (KT)", "문현빈 (한화)", "김호령 (KIA)", "최지훈 (SSG)", "박재현 (KIA)", "전민재 (롯데)", "구자욱 (삼성)", "에레디아 (SSG)", "고승민 (롯데)", "김태연 (한화)", "안재석 (두산)", "이우성 (NC)", "나승엽 (롯데)", "송찬의 (LG)", "카스트로 (KIA)", "박준순 (두산)", "김건희 (키움)", "이도윤 (한화)", "허경민 (KT)", "한준수 (KIA)", "손성빈 (롯데)", "조형우 (SSG)", "김휘집 (NC)", "천재환 (NC)", "추재현 (키움)", "카메론 (두산)", "권동진 (KT)", "천성호 (LG)", "김태군 (KIA)", "하주석 (KIA)", "류현인 (KT)", "노진혁 (롯데)", "오윤석 (KT)", "손호영 (롯데)", "안중열 (NC)", "오명진 (두산)", "박승욱 (롯데)", "박시원 (NC)", "배정대 (KT)", "유강남 (롯데)", "김동헌 (키움)", "이주형 (키움)"]}};
+  const 색 = { "준족형": "#2b7fd6", "거포형": "#d64545", "교타형": "#2a9d5c" };
+  let 그렸음 = false;
+  function 그리기() {
+    if (그렸음 || typeof Plotly === "undefined") return;
+    그렸음 = true;
+    const traces = Object.keys(점).map(n => ({
+      x: 점[n].x, y: 점[n].y, text: 점[n].t, name: n, mode: "markers", type: "scatter",
+      marker: { color: 색[n], size: 8, opacity: .8 }, hovertemplate: "%{text}<br>홈런율 %{x:.3f}<br>도루율 %{y:.3f}<extra>" + n + "</extra>"
+    }));
+    Plotly.newPlot("scatter", traces, {
+      margin: { l: 56, r: 12, t: 12, b: 48 }, paper_bgcolor: "#f7f3e8", plot_bgcolor: "#f7f3e8",
+      xaxis: { title: "홈런율 (홈런 ÷ 타석)" }, yaxis: { title: "도루율 (도루 ÷ 타석)" },
+      legend: { orientation: "h", y: 1.08 }, font: { size: 13 }
+    }, { displayModeBar: false, responsive: true });
+  }
+  const slides = [...document.querySelectorAll('.slide')];
+  const dots = document.getElementById('dots');
+  slides.forEach(() => dots.appendChild(document.createElement('i')));
+  let cur = 0;
+  function show(i) {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, k) => s.classList.toggle('on', k === cur));
+    [...dots.children].forEach((d, k) => d.classList.toggle('here', k === cur));
+    document.getElementById('pageno').textContent = (cur + 1) + ' / ' + slides.length;
+    if (slides[cur].querySelector('#scatter')) 그리기();
+  }
+  addEventListener('keydown', e => {
+    if (['ArrowRight', ' ', 'PageDown'].includes(e.key)) show(cur + 1);
+    if (['ArrowLeft', 'PageUp'].includes(e.key)) show(cur - 1);
+    if (e.key === 'Home') show(0);
+  });
+  addEventListener('click', e => { if (e.target.closest('a, #scatter')) return; show(cur + (e.clientX > innerWidth / 2 ? 1 : -1)); });
+  show(0);
+</script>
+</body>
+</html>
