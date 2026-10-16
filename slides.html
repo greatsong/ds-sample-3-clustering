@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>기록실 3인방 발표 · KBO 타자 유형</title>
-<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
@@ -117,157 +116,9 @@
 <body>
 
 <!-- 1 제목 -->
-<section class="slide chapter">
-  <div class="kicker">1 / 16 · 제목</div>
-  <h1>KBO 타자는 정말<br>'거포형·준족형·교타형'<br>세 유형으로 나뉘는가</h1>
-  <p class="sub">기록실 3인방 · 20207 오태양 · 20214 윤하린 · 20222 강민석</p>
-  <p class="small">선생님이 만든 가상 팀의 샘플 · 데이터와 수치는 실제 계산값</p>
-</section>
-
-<!-- 2 데이터셋 -->
+<!-- 모델 소개 4장 (연계 수행평가, 3분 발표). 교사 결정 2026-10-16: 프로젝트 1부 12장은 제출물에서 뺌 -->
 <section class="slide">
-  <div class="kicker">2 / 16 · 우리 팀의 데이터셋</div>
-  <h2>우리 팀의 데이터셋</h2>
-  <div class="withimg">
-    <ul class="facts txt small-facts">
-      <li>KBO 공식 기록실, 2026 정규 시즌 타자 기록</li>
-      <li><b>364명 · 25개 열</b>, 2026-10-15 수집</li>
-      <li>타석당 비율 5개: 홈런 · 도루 · 볼넷 · <span class="nw">삼진 · 2루타</span></li>
-      <li>타석 100 이상 <b>155명</b>만 사용 <span class="nw">(타석 0인 선수 <b>73명</b>)</span></li>
-    </ul>
-    <div class="diagram plot"><div class="chart" id="g2"></div></div>
-  </div>
-</section>
-
-<!-- 3 선택 이유 -->
-<section class="slide">
-  <div class="kicker">3 / 16 · 이 문제를 선택한 이유</div>
-  <h2>이 문제를 선택한 이유</h2>
-  <ul class="facts">
-    <li>중계에서 자주 듣는 말: <b>"거포"</b> · <b>"준족"</b> · <b>"교타자"</b></li>
-    <li>기록에서 나온 말인지, 해설자의 인상인지</li>
-    <li>수업에서 축구 선수를 묶은 방법을 야구 타자에 적용</li>
-    <li>팀원 궁금증: 교타자의 기록 · 타석 수가 다른 선수 비교 · 아는 이름대로 나뉘는지</li>
-  </ul>
-</section>
-
-<!-- 4 과정 -->
-<section class="slide">
-  <div class="kicker">4 / 16 · 어떤 과정으로 분석했는지</div>
-  <h2>어떤 과정으로 분석했는지</h2>
-  <div class="steps">
-    <ol>
-      <li><b>수집</b> KBO 기록실 · 364명 × 25열</li>
-      <li><b>변수 선택</b> 타석당 비율 5개 · 타율 · OPS 제외</li>
-      <li><b>전처리</b> 타석 100 이상 155명만 사용</li>
-      <li><b>분할</b> 155명 전체 사용 · 표준화</li>
-      <li><b>기준선</b> k=2~6 실루엣 · 표준화 전 0.278</li>
-    </ol>
-    <ol start="6">
-      <li><b>후보 모델</b> K-평균 · 계층적 · DBSCAN · 가우시안 혼합</li>
-      <li><b>선택</b> K-평균 k=3 · 중계의 세 표현과 비교</li>
-      <li><b>평가</b> 실루엣 · 엘보우</li>
-      <li><b>해석</b> 유형별 평균 · 홈런-삼진 상관 · 유형별 OPS</li>
-      <li><b>한계 점검</b> 타석 기준 50 · 200 · 안정성 검사 안 함</li>
-    </ol>
-  </div>
-</section>
-
-<!-- 5 고려한 모델 -->
-<section class="slide">
-  <div class="kicker">5 / 16 · 어떤 모델을 고려했는지</div>
-  <h2>어떤 모델을 고려했는지</h2>
-  <table class="mini cmp">
-    <tr><th>모델</th><th>실루엣</th><th>묶음 크기</th><th>K-평균과 겹침</th></tr>
-    <tr><td>K-평균(k=3)</td><td><em>0.182</em></td><td>57 · 53 · 45</td><td>1.00</td></tr>
-    <tr><td>계층적 군집(ward)</td><td>0.133</td><td>74 · 48 · 33</td><td>0.77</td></tr>
-    <tr><td>DBSCAN</td><td>계산 불가</td><td>132 (잡음 23명)</td><td>비교 불가</td></tr>
-    <tr><td>가우시안 혼합(3개)</td><td>0.056</td><td>71 · 57 · 27</td><td>0.43</td></tr>
-  </table>
-  <p class="small">같은 155명 · 표준화 다섯 비율 · DBSCAN 반경 1.5, 최소 이웃 10</p>
-</section>
-
-<!-- 6 선택 이유 -->
-<section class="slide">
-  <div class="kicker">6 / 16 · 왜 이 모델을 선택했는지</div>
-  <h2>왜 이 모델을 선택했는지</h2>
-  <ul class="facts">
-    <li>K-평균: 수업에서 배운 방법, 계산 과정 설명 가능</li>
-    <li>묶음 평균으로 유형 이름 붙이기 쉬움</li>
-    <li>실루엣 <b>0.182</b>, 네 방법 가운데 최고</li>
-    <li>계층적 군집과 <b>119/155명</b> 같은 묶음</li>
-    <li>가우시안 혼합 · DBSCAN과의 차이: 경계가 흐릿하다는 근거</li>
-  </ul>
-</section>
-
-<!-- 7 평가지표 -->
-<section class="slide">
-  <div class="kicker">7 / 16 · 우리가 사용한 평가지표</div>
-  <h2>우리가 사용한 평가지표</h2>
-  <ul class="facts small-facts">
-    <li>실루엣: 자기 묶음과 가깝고 옆 묶음과 먼 정도 (-1~1)</li>
-    <li>군집 내 제곱합(엘보우): 묶음 가운데까지 거리 제곱의 합, 꺾이는 곳 확인</li>
-    <li>우리 결과: 표준화 후 k=3, 실루엣 <b>0.182</b></li>
-    <li>기준선: k=2~6 실루엣 <b>0.182~0.204</b> · 표준화 없이 <b>0.278</b></li>
-    <li>고른 이유: 정답이 없는 군집에서 묶음 사이 거리를 확인</li>
-  </ul>
-</section>
-
-<!-- 8 결정 -->
-<section class="slide">
-  <div class="kicker">8 / 16 · 모델링 과정에서 우리 팀이 결정한 것</div>
-  <h2>모델링 과정에서 우리 팀이 결정한 것</h2>
-  <ul class="facts small-facts">
-    <li>타석 100 이상 <b>155명</b> (50이면 196명, 200이면 111명)</li>
-    <li>개수 대신 타석당 비율</li>
-    <li>표준화: 실루엣 0.278 대신 <b>0.182</b>, 삼진율 쏠림 제거</li>
-    <li>k=3: 최고점이 아님, 중계의 세 표현과 비교하려고 선택</li>
-    <li>타율 · OPS 제외: 넣으면 실력 순서로 묶임</li>
-  </ul>
-</section>
-
-<!-- 9 해석 -->
-<section class="slide">
-  <div class="kicker">9 / 16 · 최종 분석 결과에 대한 우리 팀의 해석</div>
-  <h2>최종 분석 결과에 대한 우리 팀의 해석</h2>
-  <div class="withimg">
-    <div class="diagram plot"><div class="chart" id="g9"></div></div>
-    <ul class="facts txt small-facts ins">
-      <li>홈런 많으면 삼진도 많음, 잘 치는 거포는 삼진 적음<br><span class="ev">상관 <b>0.337</b> · 거포형 안 삼진율-OPS <b>-0.415</b> · 김도영 45홈런 삼진율 0.174</span></li>
-      <li>준족형 대부분은 빠르지 않음<br><span class="ev">도루 중앙값 <b>3개</b> · 상위 5명이 전체 도루의 <b>25.2%</b></span></li>
-      <li>유형은 실력 순서가 아닌 치는 방식<br><span class="ev">유형 사이 OPS 차이 <b>0.116</b> · 거포형 안 차이 <b>0.566</b></span></li>
-    </ul>
-  </div>
-  <p class="small">결론: 세 유형과 비슷한 경향, 경계는 흐릿 · 그래프는 홈런율과 도루율 두 개만 표시</p>
-</section>
-
-<!-- 10 추가 연구 -->
-<section class="slide">
-  <div class="kicker">10 / 16 · 이후 추가로 연구한다면</div>
-  <h2>이후 추가로 연구한다면 더 해 보고 싶은 것</h2>
-  <table class="mini">
-    <tr><th>구분</th><th>키워드</th></tr>
-    <tr><td>더 해 볼 분석</td><td>2024 · 2025 시즌 추가로 유형 유지 확인, 투수 기록에 적용</td></tr>
-    <tr><td>교과 연계</td><td>체육: 경기 기록 분석 · 수학: 표준화, 거리와 평균 · 정보: 데이터 자동 수집</td></tr>
-    <tr><td>진로 분야</td><td>스포츠 데이터 분석가 · 구단 전력 분석원 · 스포츠 기자</td></tr>
-  </table>
-</section>
-
-<!-- 11 느낀 점 -->
-<section class="slide">
-  <div class="kicker">11 / 16 · 느끼고 배운 점</div>
-  <h2>AI를 활용하고 데이터를 분석하며 느끼고 배운 점</h2>
-  <ul class="facts small-facts">
-    <li>오태양: "k를 데이터가 정해 줄 거라고 생각했는데 결국 우리가 정하고 이유를 써야 했다."</li>
-    <li>윤하린: "평균표를 안 봤으면 0.278만 믿고 발표할 뻔했다."</li>
-    <li>강민석: "AI 제안을 말로만 거절하지 않고 직접 돌려 보고 거절하니 이유를 말하기 쉬웠다."</li>
-  </ul>
-  <p class="point">AI 활용에서 배운 것: <b>높은 점수보다 질문에 맞는 결과</b> · <b>제안은 직접 돌려 보고 판단</b></p>
-</section>
-
-<!-- 12~15 2부 · 모델 소개 (3분 발표) -->
-<section class="slide">
-  <div class="kicker">12 / 16 · 모델 소개 · 우리가 선택한 모델</div>
+  <div class="kicker">1 / 4 · 모델 소개 · 우리가 선택한 모델</div>
   <h2>우리가 선택한 모델: K-평균(k=3)</h2>
   <ul class="facts small-facts">
     <li>원리: 중심 3개를 정하고 가까운 중심에 배정, 중심 다시 계산을 반복</li>
@@ -279,7 +130,7 @@
 </section>
 
 <section class="slide">
-  <div class="kicker">13 / 16 · 모델 소개 · 비교 모델 1</div>
+  <div class="kicker">2 / 4 · 모델 소개 · 비교 모델 1</div>
   <h2>비교 모델 1: 계층적 군집(응집, ward)</h2>
   <ul class="facts small-facts">
     <li>원리: 가까운 것끼리 차례로 합쳐 나무 모양(덴드로그램)</li>
@@ -291,7 +142,7 @@
 </section>
 
 <section class="slide">
-  <div class="kicker">14 / 16 · 모델 소개 · 비교 모델 2</div>
+  <div class="kicker">3 / 4 · 모델 소개 · 비교 모델 2</div>
   <h2>비교 모델 2: DBSCAN</h2>
   <ul class="facts small-facts">
     <li>원리: 반경 안에 이웃이 충분한 촘촘한 곳을 이어 묶음, 드문 점은 잡음</li>
@@ -303,7 +154,7 @@
 </section>
 
 <section class="slide">
-  <div class="kicker">15 / 16 · 모델 소개 · 세 모델 비교 요약</div>
+  <div class="kicker">4 / 4 · 모델 소개 · 세 모델 비교 요약</div>
   <h2>세 모델 비교 요약</h2>
   <table class="mini sum">
     <tr><th>모델</th><th>원리</th><th>장점</th><th>단점</th><th>적합한 상황</th><th>우리 데이터</th></tr>
@@ -312,14 +163,6 @@
     <tr><td>DBSCAN</td><td>촘촘한 곳 묶기</td><td>k 불필요</td><td>반경에 민감</td><td>불규칙한 모양</td><td>묶음 1개 · 잡음 23명</td></tr>
   </table>
   <p class="point">우리 데이터에는 <b>K-평균</b>: 세 유형과 비교, 실루엣 최고, 계층적 군집과 같은 모양</p>
-</section>
-
-<!-- 16 마무리 -->
-<section class="slide chapter">
-  <div class="kicker">16 / 16 · 마무리</div>
-  <h1>감사합니다</h1>
-  <p class="sub">질문 받겠습니다</p>
-  <p class="small">기록실 3인방 · 오태양 · 윤하린 · 강민석</p>
 </section>
 
 <div class="hint">← → 이동 · Home 처음으로</div>
